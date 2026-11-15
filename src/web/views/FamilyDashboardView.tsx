@@ -7,9 +7,16 @@ import { LanguageToggle } from '../components/LanguageToggle.js';
 import { api, ApiError } from '../api/client.js';
 import { buildWhatsAppShareUrl } from '../../shared/whatsappLink.js';
 import type {
-  Medicine, Routine, Appointment, Proposal,
-  Activity, OutboxEntry, PillColor, PillShape,
-  FoodInstruction, Slot,
+  Medicine,
+  Routine,
+  Appointment,
+  Proposal,
+  Activity,
+  OutboxEntry,
+  PillColor,
+  PillShape,
+  FoodInstruction,
+  Slot,
 } from '../../shared/types.js';
 
 interface AdherenceResponse {
@@ -40,14 +47,18 @@ interface FamilyDashboardViewProps {
 
 export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSignOut }) => {
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'medicines' | 'appointments' | 'circle' | 'activity' | 'outbox' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'medicines' | 'appointments' | 'circle' | 'activity' | 'outbox' | 'settings'
+  >('overview');
 
   const [elderName, setElderName] = useState('Amma');
   const [adherenceData, setAdherenceData] = useState<AdherenceResponse | null>(null);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [appointments, setAppointments] = useState<Array<Appointment & { googleCalendarUrl: string }>>([]);
+  const [appointments, setAppointments] = useState<
+    Array<Appointment & { googleCalendarUrl: string }>
+  >([]);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [outbox, setOutbox] = useState<OutboxEntry[]>([]);
@@ -268,37 +279,57 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
 
         {/* Navigation Tabs */}
         <nav className="tabs" aria-label="Dashboard navigation">
-          {(['overview', 'medicines', 'appointments', 'circle', 'activity', 'outbox', 'settings'] as const).map(
-            (tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-              >
-                {t.family[tab] || tab}
-              </button>
-            ),
-          )}
+          {(
+            [
+              'overview',
+              'medicines',
+              'appointments',
+              'circle',
+              'activity',
+              'outbox',
+              'settings',
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
+            >
+              {t.family[tab] || tab}
+            </button>
+          ))}
         </nav>
 
         {/* ── Tab 1: Overview ── */}
         {activeTab === 'overview' && (
           <div>
             {/* Top Stat Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '1rem',
+                marginBottom: '1.5rem',
+              }}
+            >
               <div className="card" style={{ borderLeft: '6px solid #0284c7' }}>
-                <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 600 }}>{t.family.adherence7d}</p>
+                <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 600 }}>
+                  {t.family.adherence7d}
+                </p>
                 <p style={{ fontSize: '2.4rem', fontWeight: 900, color: '#0f172a' }}>
                   {adherenceData?.overall7d.percentage || 100}%
                 </p>
                 <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  {adherenceData?.overall7d.taken || 0} of {adherenceData?.overall7d.total || 0} doses taken
+                  {adherenceData?.overall7d.taken || 0} of {adherenceData?.overall7d.total || 0}{' '}
+                  doses taken
                 </p>
               </div>
 
               <div className="card" style={{ borderLeft: '6px solid #15803d' }}>
-                <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 600 }}>{t.family.adherence30d}</p>
+                <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 600 }}>
+                  {t.family.adherence30d}
+                </p>
                 <p style={{ fontSize: '2.4rem', fontWeight: 900, color: '#0f172a' }}>
                   {adherenceData?.overall30d.percentage || 100}%
                 </p>
@@ -306,7 +337,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
               </div>
 
               <div className="card" style={{ borderLeft: '6px solid #d97706' }}>
-                <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 600 }}>Pending Proposals</p>
+                <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 600 }}>
+                  Pending Proposals
+                </p>
                 <p style={{ fontSize: '2.4rem', fontWeight: 900, color: '#d97706' }}>
                   {proposals.filter((p) => p.status === 'pending').length}
                 </p>
@@ -324,12 +357,21 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             {/* Care Insights Card (SPEC §4.5) */}
             {adherenceData?.insights && adherenceData.insights.length > 0 && (
               <div className="card" style={{ background: '#fffbeb', borderColor: '#f59e0b' }}>
-                <h3 style={{ fontSize: '1.25rem', color: '#b45309', marginBottom: '0.75rem', fontWeight: 800 }}>
+                <h3
+                  style={{
+                    fontSize: '1.25rem',
+                    color: '#b45309',
+                    marginBottom: '0.75rem',
+                    fontWeight: 800,
+                  }}
+                >
                   💡 {t.family.insights}
                 </h3>
                 {adherenceData.insights.map((ins, i) => (
                   <div key={i} style={{ marginBottom: '0.75rem' }}>
-                    <p style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>{ins.message}</p>
+                    <p style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>
+                      {ins.message}
+                    </p>
                     <p style={{ color: '#475569', marginTop: '0.2rem' }}>
                       <strong>Suggestion:</strong> {ins.suggestion}
                     </p>
@@ -343,7 +385,14 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
         {/* ── Tab 2: Medicines & Routines ── */}
         {activeTab === 'medicines' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.25rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.4rem' }}>Medications ({medicines.length})</h2>
               <button
                 type="button"
@@ -354,9 +403,20 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                marginBottom: '2rem',
+              }}
+            >
               {medicines.map((med) => (
-                <div key={med.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  key={med.id}
+                  className="card"
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <PillIcon color={med.pillColor} shape={med.pillShape} size={40} />
                     <div>
@@ -374,7 +434,14 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
               ))}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.25rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.4rem' }}>Healthcare Routines ({routines.length})</h2>
               <button
                 type="button"
@@ -387,7 +454,11 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {routines.map((rt) => (
-                <div key={rt.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  key={rt.id}
+                  className="card"
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <div>
                     <p style={{ fontSize: '1.15rem', fontWeight: 700 }}>{rt.label}</p>
                     <p style={{ fontSize: '0.95rem', color: '#475569' }}>
@@ -404,7 +475,14 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
         {/* ── Tab 3: Appointments ── */}
         {activeTab === 'appointments' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.25rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.4rem' }}>Doctor Appointments ({appointments.length})</h2>
               <button
                 type="button"
@@ -418,15 +496,27 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {appointments.map((appt) => (
                 <div key={appt.id} className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
                     <div>
                       <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
                         {appt.doctorName} {appt.specialty && `(${appt.specialty})`}
                       </h3>
                       <p style={{ fontSize: '1rem', color: '#334155', marginTop: '0.2rem' }}>
-                        📅 {new Date(appt.startsAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+                        📅{' '}
+                        {new Date(appt.startsAt).toLocaleString('en-US', {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        })}
                       </p>
-                      {appt.place && <p style={{ fontSize: '0.95rem', color: '#475569' }}>📍 {appt.place}</p>}
+                      {appt.place && (
+                        <p style={{ fontSize: '0.95rem', color: '#475569' }}>📍 {appt.place}</p>
+                      )}
                     </div>
 
                     <a
@@ -441,11 +531,22 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
                   </div>
 
                   {appt.questions && appt.questions.length > 0 && (
-                    <div style={{ marginTop: '0.75rem', padding: '0.6rem', background: '#f1f5f9', borderRadius: '8px' }}>
-                      <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>Questions for Doctor:</p>
+                    <div
+                      style={{
+                        marginTop: '0.75rem',
+                        padding: '0.6rem',
+                        background: '#f1f5f9',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155' }}>
+                        Questions for Doctor:
+                      </p>
                       <ul style={{ paddingLeft: '1.25rem', marginTop: '0.25rem' }}>
                         {appt.questions.map((q, i) => (
-                          <li key={i} style={{ fontSize: '0.9rem', color: '#475569' }}>{q}</li>
+                          <li key={i} style={{ fontSize: '0.9rem', color: '#475569' }}>
+                            {q}
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -459,7 +560,14 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
         {/* ── Tab 4: Circle Management ── */}
         {activeTab === 'circle' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.25rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.4rem' }}>Circle Members ({members.length})</h2>
               <button
                 type="button"
@@ -475,7 +583,11 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {members.map((m) => (
-                <div key={m.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  key={m.id}
+                  className="card"
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <div>
                     <p style={{ fontSize: '1.15rem', fontWeight: 700 }}>
                       {m.role === 'elder' ? '👵 ' : m.role === 'family' ? '👨‍💼 ' : '👩‍⚕️ '}
@@ -512,11 +624,20 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {activities.map((act) => (
                 <div key={act.id} className="card" style={{ padding: '0.75rem 1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#64748b' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '0.85rem',
+                      color: '#64748b',
+                    }}
+                  >
                     <span>By: {act.actorRole}</span>
                     <span>{new Date(act.at).toLocaleString()}</span>
                   </div>
-                  <p style={{ fontWeight: 600, fontSize: '1.05rem', marginTop: '0.2rem' }}>{act.summary}</p>
+                  <p style={{ fontWeight: 600, fontSize: '1.05rem', marginTop: '0.2rem' }}>
+                    {act.summary}
+                  </p>
                 </div>
               ))}
             </div>
@@ -526,7 +647,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
         {/* ── Tab 6: Reminder Outbox ── */}
         {activeTab === 'outbox' && (
           <div>
-            <h2 style={{ fontSize: '1.4rem', marginBottom: '1.25rem' }}>Reminder Outbox (Proactive Emails)</h2>
+            <h2 style={{ fontSize: '1.4rem', marginBottom: '1.25rem' }}>
+              Reminder Outbox (Proactive Emails)
+            </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {outbox.length === 0 ? (
                 <p style={{ color: '#64748b' }}>No reminder emails logged yet.</p>
@@ -535,10 +658,16 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
                   <div key={out.id} className="card">
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span className="badge badge-active">{out.status}</span>
-                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{new Date(out.at).toLocaleString()}</span>
+                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                        {new Date(out.at).toLocaleString()}
+                      </span>
                     </div>
-                    <p style={{ fontWeight: 700, fontSize: '1.1rem', marginTop: '0.4rem' }}>{out.subject}</p>
-                    <p style={{ fontSize: '0.9rem', color: '#475569' }}>To: {out.to} · Kind: {out.kind}</p>
+                    <p style={{ fontWeight: 700, fontSize: '1.1rem', marginTop: '0.4rem' }}>
+                      {out.subject}
+                    </p>
+                    <p style={{ fontSize: '0.9rem', color: '#475569' }}>
+                      To: {out.to} · Kind: {out.kind}
+                    </p>
                   </div>
                 ))
               )}
@@ -553,9 +682,16 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             <p style={{ color: '#475569', marginBottom: '1.25rem' }}>
               Day anchors and notification preferences are active.
             </p>
-            <p><strong>Elder:</strong> {elderName}</p>
-            <p><strong>Timezone:</strong> Asia/Kolkata</p>
-            <p><strong>Default Anchors:</strong> Breakfast 08:00, Lunch 13:00, Evening 18:00, Dinner 20:30</p>
+            <p>
+              <strong>Elder:</strong> {elderName}
+            </p>
+            <p>
+              <strong>Timezone:</strong> Asia/Kolkata
+            </p>
+            <p>
+              <strong>Default Anchors:</strong> Breakfast 08:00, Lunch 13:00, Evening 18:00, Dinner
+              20:30
+            </p>
           </div>
         )}
       </div>
@@ -568,7 +704,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
       >
         <form onSubmit={handleProposeMedicine}>
           <div className="form-group">
-            <label htmlFor="med-name" className="form-label">Medicine Name</label>
+            <label htmlFor="med-name" className="form-label">
+              Medicine Name
+            </label>
             <input
               id="med-name"
               type="text"
@@ -581,7 +719,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
           </div>
 
           <div className="form-group">
-            <label htmlFor="med-strength" className="form-label">Strength</label>
+            <label htmlFor="med-strength" className="form-label">
+              Strength
+            </label>
             <input
               id="med-strength"
               type="text"
@@ -593,7 +733,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
           </div>
 
           <div className="form-group">
-            <label htmlFor="med-purpose" className="form-label">Purpose (Plain words)</label>
+            <label htmlFor="med-purpose" className="form-label">
+              Purpose (Plain words)
+            </label>
             <input
               id="med-purpose"
               type="text"
@@ -606,7 +748,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div className="form-group">
-              <label htmlFor="med-color" className="form-label">Color</label>
+              <label htmlFor="med-color" className="form-label">
+                Color
+              </label>
               <select
                 id="med-color"
                 className="form-select"
@@ -625,7 +769,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             </div>
 
             <div className="form-group">
-              <label htmlFor="med-shape" className="form-label">Shape</label>
+              <label htmlFor="med-shape" className="form-label">
+                Shape
+              </label>
               <select
                 id="med-shape"
                 className="form-select"
@@ -644,12 +790,16 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
           </div>
 
           <div className="form-group">
-            <label htmlFor="med-food" className="form-label">Food Instruction</label>
+            <label htmlFor="med-food" className="form-label">
+              Food Instruction
+            </label>
             <select
               id="med-food"
               className="form-select"
               value={newMed.foodInstruction}
-              onChange={(e) => setNewMed({ ...newMed, foodInstruction: e.target.value as FoodInstruction })}
+              onChange={(e) =>
+                setNewMed({ ...newMed, foodInstruction: e.target.value as FoodInstruction })
+              }
             >
               <option value="after_food">After food</option>
               <option value="before_food">Before food</option>
@@ -658,7 +808,11 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             </select>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: '1rem' }}
+          >
             Submit Proposal for Elder Review
           </button>
         </form>
@@ -672,7 +826,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
       >
         <form onSubmit={handleAddRoutine}>
           <div className="form-group">
-            <label htmlFor="rt-label" className="form-label">Routine Label</label>
+            <label htmlFor="rt-label" className="form-label">
+              Routine Label
+            </label>
             <input
               id="rt-label"
               type="text"
@@ -685,7 +841,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
           </div>
 
           <div className="form-group">
-            <label htmlFor="rt-slot" className="form-label">Time of Day</label>
+            <label htmlFor="rt-slot" className="form-label">
+              Time of Day
+            </label>
             <select
               id="rt-slot"
               className="form-select"
@@ -699,7 +857,11 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             </select>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: '1rem' }}
+          >
             Add Routine
           </button>
         </form>
@@ -713,7 +875,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
       >
         <form onSubmit={handleAddAppointment}>
           <div className="form-group">
-            <label htmlFor="appt-doctor" className="form-label">Doctor Name</label>
+            <label htmlFor="appt-doctor" className="form-label">
+              Doctor Name
+            </label>
             <input
               id="appt-doctor"
               type="text"
@@ -726,7 +890,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
           </div>
 
           <div className="form-group">
-            <label htmlFor="appt-specialty" className="form-label">Specialty</label>
+            <label htmlFor="appt-specialty" className="form-label">
+              Specialty
+            </label>
             <input
               id="appt-specialty"
               type="text"
@@ -738,7 +904,9 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
           </div>
 
           <div className="form-group">
-            <label htmlFor="appt-time" className="form-label">Date & Time</label>
+            <label htmlFor="appt-time" className="form-label">
+              Date & Time
+            </label>
             <input
               id="appt-time"
               type="datetime-local"
@@ -749,7 +917,11 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
             />
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: '1rem' }}
+          >
             Schedule & Create Google Calendar Link
           </button>
         </form>
@@ -763,16 +935,30 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
       >
         {generatedInviteCode ? (
           <div style={{ textAlign: 'center', padding: '1rem' }}>
-            <p style={{ fontSize: '1.1rem', color: '#15803d', fontWeight: 700 }}>Single-Use Invite Code:</p>
-            <p style={{ fontSize: '2rem', letterSpacing: '4px', fontWeight: 900, color: '#0f172a', margin: '0.75rem 0' }}>
+            <p style={{ fontSize: '1.1rem', color: '#15803d', fontWeight: 700 }}>
+              Single-Use Invite Code:
+            </p>
+            <p
+              style={{
+                fontSize: '2rem',
+                letterSpacing: '4px',
+                fontWeight: 900,
+                color: '#0f172a',
+                margin: '0.75rem 0',
+              }}
+            >
               {generatedInviteCode}
             </p>
-            <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Valid for 48 hours. Share this code with the joiner.</p>
+            <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
+              Valid for 48 hours. Share this code with the joiner.
+            </p>
           </div>
         ) : (
           <div>
             <div className="form-group">
-              <label htmlFor="invite-role" className="form-label">Select Role</label>
+              <label htmlFor="invite-role" className="form-label">
+                Select Role
+              </label>
               <select
                 id="invite-role"
                 className="form-select"
@@ -817,7 +1003,11 @@ export const FamilyDashboardView: React.FC<FamilyDashboardViewProps> = ({ onSign
               minLength={targetMemberForPin?.role === 'elder' ? 4 : 6}
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: '1rem' }}
+          >
             Confirm PIN Reset
           </button>
         </form>

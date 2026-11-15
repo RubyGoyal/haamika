@@ -14,12 +14,7 @@ interface SosModalProps {
   familyPhone?: string;
 }
 
-export const SosModal: React.FC<SosModalProps> = ({
-  isOpen,
-  onClose,
-  elderName,
-  familyPhone,
-}) => {
+export const SosModal: React.FC<SosModalProps> = ({ isOpen, onClose, elderName, familyPhone }) => {
   const [alertSent, setAlertSent] = useState(false);
 
   useEffect(() => {
