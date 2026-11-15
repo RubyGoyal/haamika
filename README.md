@@ -10,7 +10,7 @@ Unlike typical surveillance-heavy reminder apps that infantilize aging parents, 
 
 ## Live Demo & Pre-Seeded Circle
 
-- **Live URL**: `https://haamika.run.app` *(Placeholder for deployment)*
+- **Live URL**: https://haamika-996577329275.asia-south1.run.app
 - **Demo Circle Code**: `AMMA-4729` (Pre-seeded with 14 days of realistic adherence history, pending proposals, and upcoming clinic visits)
 
 ### Pre-Configured Test Personas:
