@@ -43,6 +43,23 @@ export async function seedDemoCircle(repo: Repository): Promise<{
   }
 
   const circleId = 'demo-circle-kamla-devi';
+
+  // Check if demo circle already exists by ID or by code hash (idempotent for multiple instances)
+  const existingById = await repo.getCircle(circleId);
+  if (existingById) {
+    const members = await repo.getMembersByCircle(circleId);
+    const elder = members.find((m) => m.role === 'elder');
+    const family = members.find((m) => m.role === 'family');
+    const caretaker = members.find((m) => m.role === 'caretaker');
+    return {
+      circleId,
+      circleCode: DEMO_CIRCLE_CODE,
+      elderId: elder?.id || '',
+      familyId: family?.id || '',
+      caretakerId: caretaker?.id || '',
+    };
+  }
+
   const now = DateTime.now().setZone('Asia/Kolkata');
   const nowIso = now.toISO()!;
 

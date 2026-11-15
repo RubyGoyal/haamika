@@ -21,12 +21,32 @@ export function originCheck(req: Request, res: Response, next: NextFunction): vo
   }
 
   const config = getConfig();
-  const allowed = new URL(config.APP_BASE_URL).origin;
 
-  if (origin !== allowed) {
-    res.status(403).json({ error: 'Origin not allowed' });
+  try {
+    const originUrl = new URL(origin);
+    const hostHeader = req.headers.host || '';
+    const hostWithoutPort = hostHeader.split(':')[0];
+    const originHostWithoutPort = originUrl.hostname;
+
+    if (
+      originUrl.host === hostHeader ||
+      originHostWithoutPort === hostWithoutPort
+    ) {
+      next();
+      return;
+    }
+
+    if (config.APP_BASE_URL && origin === new URL(config.APP_BASE_URL).origin) {
+      next();
+      return;
+    }
+  } catch {
+    res.status(403).json({ error: 'Invalid origin header' });
     return;
   }
+
+  res.status(403).json({ error: 'Origin not allowed' });
+  return;
 
   next();
 }

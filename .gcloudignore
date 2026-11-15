@@ -1,0 +1,11 @@
+.gcloudignore
+.git
+.gitignore
+node_modules
+dist
+coverage
+.env
+.env.*
+.dockerignore
+docs
+README.md

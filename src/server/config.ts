@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 const ConfigSchema = z.object({
-  PORT: z.coerce.number().int().positive().default(3000),
+  PORT: z.coerce.number().int().positive().default(8080),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DATA_BACKEND: z.enum(['memory', 'firestore']).default('memory'),
   GOOGLE_CLOUD_PROJECT: z.string().optional(),
-  GOOGLE_CLOUD_LOCATION: z.string().default('us-central1'),
+  GOOGLE_CLOUD_LOCATION: z.string().default('global'),
   GOOGLE_GENAI_USE_VERTEXAI: z.coerce.boolean().default(false),
-  GEMINI_MODEL: z.string().default('gemini-2.0-flash'),
+  GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
   GEMINI_API_KEY: z.string().optional(),
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be ≥ 32 characters'),
   CRON_SECRET: z.string().min(16, 'CRON_SECRET must be ≥ 16 characters'),
@@ -16,7 +16,7 @@ const ConfigSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   MAIL_FROM: z.string().optional(),
-  APP_BASE_URL: z.string().url().default('http://localhost:3000'),
+  APP_BASE_URL: z.string().url().optional(),
   DEMO_MODE: z.coerce.boolean().default(false),
 });
 

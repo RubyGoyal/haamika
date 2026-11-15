@@ -33,6 +33,9 @@ import { sosRoutes } from './routes/sos.js';
 export function createApp(repo: Repository): express.Express {
   const app = express();
 
+  /* ── Cloud Run Trust Proxy ───────────────────────────── */
+  app.set('trust proxy', 1);
+
   /* ── Security ────────────────────────────────────────── */
   app.use(securityHeaders);
   app.use(compression());
