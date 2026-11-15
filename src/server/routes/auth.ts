@@ -20,6 +20,24 @@ export function authRoutes(repo: Repository): Router {
   const router = Router();
 
   /**
+   * GET /api/auth/demo — returns demo credentials when DEMO_MODE is true.
+   */
+  router.get('/demo', async (_req, res) => {
+    const config = getConfig();
+    if (!config.DEMO_MODE) {
+      res.json({ enabled: false });
+      return;
+    }
+    res.json({
+      enabled: true,
+      code: 'AMMA-4729',
+      elderPin: '2580',
+      familyPin: '135790',
+      caretakerPin: '246802',
+    });
+  });
+
+  /**
    * POST /api/auth/lookup — look up a circle by code.
    * Returns member tiles (id, name, role) for the sign-in screen.
    */

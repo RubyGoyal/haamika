@@ -9,6 +9,7 @@ import { loadConfig } from './config.js';
 import { createRepository } from './repositories/index.js';
 import { createApp } from './app.js';
 import { logger } from './services/logger.js';
+import { seedDemoCircle } from './seed/demo.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,6 +20,16 @@ async function main(): Promise<void> {
 
   // Create repository
   const repo = createRepository(config.DATA_BACKEND, config.GOOGLE_CLOUD_PROJECT);
+
+  // Seed demo data if DEMO_MODE is true
+  if (config.DEMO_MODE) {
+    try {
+      const demoInfo = await seedDemoCircle(repo);
+      logger.info('Demo circle seeded', { code: demoInfo.circleCode, circleId: demoInfo.circleId });
+    } catch (err: unknown) {
+      logger.error('Failed to seed demo data', { error: (err as Error).message });
+    }
+  }
 
   // Create Express app
   const app = createApp(repo);

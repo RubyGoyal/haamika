@@ -322,3 +322,79 @@ export const CreateEventInput = z
     reading: z.string().max(100).optional(),
   })
   .strict();
+
+export const ProposeMedicineInput = z
+  .object({
+    name: z.string().min(1).max(200),
+    strength: z.string().max(50).optional(),
+    purpose: z.string().max(500).optional(),
+    pillColor: PillColorEnum,
+    pillShape: PillShapeEnum,
+    foodInstruction: FoodInstructionEnum,
+    slots: z.array(SlotEnum).min(1),
+    dosePerSlot: z.number().int().positive().default(1),
+    daysOfWeek: z.array(DayOfWeekEnum).min(1).default(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
+    stockCount: z.number().int().nonnegative().optional(),
+    refillThreshold: z.number().int().nonnegative().optional(),
+  })
+  .strict();
+export type ProposeMedicineInputType = z.infer<typeof ProposeMedicineInput>;
+
+export const UpdateMedicineInput = ProposeMedicineInput.partial().extend({
+  status: MedicineStatusEnum.optional(),
+}).strict();
+export type UpdateMedicineInputType = z.infer<typeof UpdateMedicineInput>;
+
+export const CreateRoutineInput = z
+  .object({
+    type: RoutineTypeEnum,
+    label: z.string().min(1).max(200),
+    slot: SlotEnum,
+    daysOfWeek: z.array(DayOfWeekEnum).min(1).default(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
+    needsReading: z.boolean().default(false),
+  })
+  .strict();
+export type CreateRoutineInputType = z.infer<typeof CreateRoutineInput>;
+
+export const UpdateRoutineInput = CreateRoutineInput.partial().strict();
+export type UpdateRoutineInputType = z.infer<typeof UpdateRoutineInput>;
+
+export const DecideProposalInput = z
+  .object({
+    decision: z.enum(['approved', 'declined']),
+  })
+  .strict();
+export type DecideProposalInputType = z.infer<typeof DecideProposalInput>;
+
+export const BatchDecideProposalsInput = z
+  .object({
+    decision: z.enum(['approved', 'declined']),
+  })
+  .strict();
+
+export const CreateAppointmentInput = z
+  .object({
+    doctorName: z.string().min(1).max(200),
+    specialty: z.string().max(100).optional(),
+    place: z.string().max(300).optional(),
+    startsAt: z.string().min(1),
+    notes: z.string().max(1000).optional(),
+    questions: z.array(z.string()).default([]),
+  })
+  .strict();
+export type CreateAppointmentInputType = z.infer<typeof CreateAppointmentInput>;
+
+export const UpdateAppointmentInput = CreateAppointmentInput.partial().extend({
+  status: z.enum(['upcoming', 'completed', 'cancelled']).optional(),
+}).strict();
+export type UpdateAppointmentInputType = z.infer<typeof UpdateAppointmentInput>;
+
+export const UpdateSettingsInput = z
+  .object({
+    anchors: AnchorsSchema.optional(),
+    timezone: z.string().min(1).optional(),
+    language: LanguageEnum.optional(),
+    preferredName: z.string().min(1).max(50).optional(),
+  })
+  .strict();
+export type UpdateSettingsInputType = z.infer<typeof UpdateSettingsInput>;

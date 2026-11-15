@@ -16,6 +16,16 @@ import { circleRoutes } from './routes/circles.js';
 import { inviteRoutes } from './routes/invites.js';
 import { memberRoutes } from './routes/members.js';
 import { meRoutes } from './routes/me.js';
+import { medicineRoutes } from './routes/medicines.js';
+import { routineRoutes } from './routes/routines.js';
+import { proposalRoutes } from './routes/proposals.js';
+import { scheduleRoutes } from './routes/schedule.js';
+import { eventRoutes } from './routes/events.js';
+import { adherenceRoutes } from './routes/adherence.js';
+import { appointmentRoutes } from './routes/appointments.js';
+import { activityRoutes } from './routes/activity.js';
+import { outboxRoutes } from './routes/outbox.js';
+import { settingsRoutes } from './routes/settings.js';
 
 export function createApp(repo: Repository): express.Express {
   const app = express();
@@ -41,6 +51,16 @@ export function createApp(repo: Repository): express.Express {
   app.use('/api/invites', inviteRoutes(repo));
   app.use('/api/members', memberRoutes(repo));
   app.use('/api/me', meRoutes(repo));
+  app.use('/api/medicines', medicineRoutes(repo));
+  app.use('/api/routines', routineRoutes(repo));
+  app.use('/api/proposals', proposalRoutes(repo));
+  app.use('/api/schedule', scheduleRoutes(repo));
+  app.use('/api/events', eventRoutes(repo));
+  app.use('/api/adherence', adherenceRoutes(repo));
+  app.use('/api/appointments', appointmentRoutes(repo));
+  app.use('/api/activity', activityRoutes(repo));
+  app.use('/api/outbox', outboxRoutes(repo));
+  app.use('/api/settings', settingsRoutes(repo));
 
   /* ── Error handler (must be last) ────────────────────── */
   app.use(errorHandler);

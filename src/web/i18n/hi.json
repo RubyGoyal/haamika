@@ -1,0 +1,79 @@
+{
+  "brand": "हामिका",
+  "tagline": "हामी आपकी, फिकर हमारी।",
+  "slogan": "हामी आपकी, फिकर हमारी",
+  "greeting": "नमस्ते",
+  "today": "आज",
+  "slots": {
+    "morning": "सुबह (नाश्ता)",
+    "afternoon": "दोपहर (खाना)",
+    "evening": "शाम (चाय)",
+    "night": "रात (रात का खाना)"
+  },
+  "food": {
+    "before_food": "खाने से पहले",
+    "after_food": "खाने के बाद",
+    "with_food": "खाने के साथ",
+    "any": "कभी भी"
+  },
+  "elder": {
+    "nowTitle": "अभी — दवाइयां और दिनचर्या",
+    "iTookThem": "मैंने ले ली",
+    "allTaken": "इस समय की सब दवाइयां पूरी हुईं!",
+    "skipWithReason": "इस बार छोड़ें",
+    "skipReasons": {
+      "unwell": "तबीयत ठीक नहीं थी",
+      "doctor": "डॉक्टर ने मना किया",
+      "ranOut": "दवाई खत्म हो गई",
+      "other": "अन्य कारण"
+    },
+    "consentTitle": "आपकी मंज़ूरी चाहिए",
+    "consentDesc": "जोड़ना चाहते हैं",
+    "okay": "हाँ, ठीक है (Okay)",
+    "notNow": "अभी नहीं — कॉल करें",
+    "okayToAll": "सभी दवाइयां ठीक हैं (Okay to all)",
+    "firstTimeSetup": "दवाइयां आपके लिए जोड़ी गई हैं। कृपया जाँच लें।",
+    "nextAppt": "अगली डॉक्टर मुलाकात",
+    "talkToHaamika": "हामिका से बात करें",
+    "callFamily": "परिवार को फोन करें",
+    "whatsAppFamily": "व्हाट्सएप पर बताएं",
+    "sos": "आपातकालीन (SOS)",
+    "removeMember": "सदस्य को हटाएं"
+  },
+  "auth": {
+    "openCircle": "मेरा सर्कल खोलें",
+    "startCircle": "नया सर्कल शुरू करें",
+    "joinCircle": "इनवाइट कोड से जुड़ें",
+    "enterCircleCode": "८-अंकों का सर्कल कोड डालें",
+    "whoIsSigningIn": "कौन साइन-इन कर रहा है?",
+    "enterPin": "अपना पिन (PIN) डालें",
+    "tryDemo": "डेमो आज़माएँ",
+    "demoElder": "बुजुर्ग के रूप में देखें (अम्मा)",
+    "demoFamily": "परिवार के रूप में देखें (रोहन)",
+    "demoCaretaker": "देखभालकर्ता के रूप में देखें (सुनीता)",
+    "locked": "अकाउंट लॉक है। कृपया १५ मिनट बाद प्रयास करें।"
+  },
+  "family": {
+    "overview": "सारांश",
+    "medicines": "दवाइयां और दिनचर्या",
+    "appointments": "डॉक्टर मुलाकातें",
+    "circle": "केयर सर्कल",
+    "activity": "गतिविधि लॉग",
+    "outbox": "रिमाइंडर आउटबॉक्स",
+    "settings": "सेटिंग्स",
+    "adherence7d": "७-दिनों का पालन दर",
+    "adherence30d": "३०-दिनों का पालन दर",
+    "insights": "देखभाल सुझाव",
+    "proposeMedicine": "नई दवाई प्रस्तावित करें",
+    "addRoutine": "नई दिनचर्या जोड़ें",
+    "addAppointment": "डॉक्टर मुलाकात जोड़ें",
+    "createInvite": "सदस्य को जोड़ें",
+    "shareWhatsApp": "व्हाट्सएप पर अपडेट भेजें"
+  },
+  "caretaker": {
+    "checklist": "अभी देने की सूची",
+    "pillBox": "साप्ताहिक पिल-बॉक्स ऑर्गनाइज़र",
+    "recordReading": "बीपी / शुगर रीडिंग दर्ज करें",
+    "markedGiven": "दवाई दे दी गई"
+  }
+}

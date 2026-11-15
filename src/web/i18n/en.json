@@ -1,0 +1,79 @@
+{
+  "brand": "Haamika",
+  "tagline": "Your yes, our care.",
+  "slogan": "Haami aapki, fikar hamari",
+  "greeting": "Hello",
+  "today": "Today",
+  "slots": {
+    "morning": "Morning (Breakfast)",
+    "afternoon": "Afternoon (Lunch)",
+    "evening": "Evening (Snacks)",
+    "night": "Night (Dinner)"
+  },
+  "food": {
+    "before_food": "Before food",
+    "after_food": "After food",
+    "with_food": "With food",
+    "any": "Any time"
+  },
+  "elder": {
+    "nowTitle": "Now — Medicines & Routines",
+    "iTookThem": "I took them",
+    "allTaken": "All done for this time!",
+    "skipWithReason": "Skip this time",
+    "skipReasons": {
+      "unwell": "Felt unwell",
+      "doctor": "Doctor said to stop",
+      "ranOut": "Ran out of medicine",
+      "other": "Other reason"
+    },
+    "consentTitle": "Permission Needed",
+    "consentDesc": "wants to add",
+    "okay": "Okay",
+    "notNow": "Not now — call",
+    "okayToAll": "Okay to all",
+    "firstTimeSetup": "medicines were set up for you. Please check them.",
+    "nextAppt": "Next Doctor Visit",
+    "talkToHaamika": "Talk to Haamika",
+    "callFamily": "Call family",
+    "whatsAppFamily": "WhatsApp family",
+    "sos": "Emergency SOS",
+    "removeMember": "Remove member"
+  },
+  "auth": {
+    "openCircle": "Open my circle",
+    "startCircle": "Start a new circle",
+    "joinCircle": "Join with invite code",
+    "enterCircleCode": "Enter 8-digit Circle Code",
+    "whoIsSigningIn": "Who is signing in?",
+    "enterPin": "Enter your PIN",
+    "tryDemo": "Try Demo",
+    "demoElder": "Try as Elder (Amma)",
+    "demoFamily": "Try as Family (Rohan)",
+    "demoCaretaker": "Try as Caretaker (Sunita)",
+    "locked": "Locked out. Try again in 15 minutes."
+  },
+  "family": {
+    "overview": "Overview",
+    "medicines": "Medicines & Routines",
+    "appointments": "Appointments",
+    "circle": "Care Circle",
+    "activity": "Activity Log",
+    "outbox": "Reminder Outbox",
+    "settings": "Settings",
+    "adherence7d": "7-Day Adherence",
+    "adherence30d": "30-Day Adherence",
+    "insights": "Care Insights",
+    "proposeMedicine": "Propose New Medicine",
+    "addRoutine": "Add Healthcare Routine",
+    "addAppointment": "Add Doctor Appointment",
+    "createInvite": "Invite Member",
+    "shareWhatsApp": "Share update on WhatsApp"
+  },
+  "caretaker": {
+    "checklist": "Give-Now Checklist",
+    "pillBox": "Weekly Pill-Box Organizer",
+    "recordReading": "Record BP / Sugar Reading",
+    "markedGiven": "Mark as given"
+  }
+}
