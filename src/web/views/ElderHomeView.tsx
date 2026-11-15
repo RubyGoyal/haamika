@@ -3,8 +3,12 @@ import { useI18n } from '../i18n/index.js';
 import { PillIcon } from '../components/PillIcon.js';
 import { LanguageToggle } from '../components/LanguageToggle.js';
 import { Dialog } from '../components/Dialog.js';
+import { SosModal } from '../components/SosModal.js';
+import { VoiceModal } from '../components/VoiceModal.js';
+import { buildWhatsAppShareUrl } from '../../shared/whatsappLink.js';
 import { api, ApiError } from '../api/client.js';
 import type { Slot, Proposal, PillColor, PillShape, FoodInstruction } from '../../shared/types.js';
+import type { VoiceIntent } from '../../shared/schemas.js';
 
 interface ScheduleItemState {
   id: string;
@@ -47,6 +51,7 @@ interface CircleMember {
   id: string;
   name: string;
   role: 'elder' | 'family' | 'caretaker';
+  phone?: string;
 }
 
 interface ElderHomeViewProps {
@@ -69,6 +74,10 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
 
   // Members / settings dialog state
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
+
+  // Phase 3: Voice assistant and SOS dialogs
+  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
+  const [sosModalOpen, setSosModalOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -177,16 +186,60 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
     }
   };
 
-  // WhatsApp family URL
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
-    `Namaste! This is ${preferredName} on Haamika. Sending you my blessings and letting you know I checked my medicines today!`,
-  )}`;
-
   // Determine current active slot or fallback to morning
   const activeSlot: Slot = scheduleData?.currentSlot || 'morning';
   const currentSlotData = scheduleData?.slots.find((s) => s.slot === activeSlot);
   const itemsInCurrentSlot = currentSlotData?.items || [];
   const allSlotTaken = itemsInCurrentSlot.length > 0 && itemsInCurrentSlot.every((i) => i.status === 'taken' || i.status === 'taken_late' || i.status === 'skipped');
+
+  // WhatsApp family URL
+  const familyMember = members.find((m) => m.role === 'family');
+  const whatsappUrl = buildWhatsAppShareUrl({
+    phone: familyMember?.phone,
+    elderName: preferredName,
+    adherencePercentage: 100,
+    todaySummary: allSlotTaken
+      ? (lang === 'hi' ? 'आज की दवाइयां ले ली हैं' : 'All doses taken today')
+      : (lang === 'hi' ? 'दवाई का समय हो गया है' : 'Checked medicines today'),
+  });
+
+  const handleVoiceConfirmAction = async (intent: VoiceIntent, payload?: Record<string, unknown>) => {
+    if (intent === 'MARK_TAKEN') {
+      const slotToTake = (payload?.slot as Slot) || activeSlot;
+      await handleMarkAllSlotTaken(slotToTake, itemsInCurrentSlot);
+    } else if (intent === 'SKIP') {
+      const reason = (payload?.reason as string) || 'Felt unwell';
+      const todayStr = scheduleData?.date || new Date().toISOString().slice(0, 10);
+      for (const item of itemsInCurrentSlot) {
+        if (item.status === 'pending') {
+          await api.post('/api/events', {
+            date: todayStr,
+            slot: activeSlot,
+            itemType: item.type,
+            itemId: item.id,
+            status: 'skipped',
+            reason,
+          });
+        }
+      }
+      await loadData();
+    } else if (intent === 'LOG_READING' && payload?.reading) {
+      const todayStr = scheduleData?.date || new Date().toISOString().slice(0, 10);
+      try {
+        await api.post('/api/events', {
+          date: todayStr,
+          slot: activeSlot,
+          itemType: 'routine',
+          itemId: 'bp-reading',
+          status: 'taken',
+          reading: payload.reading as string,
+        });
+        await loadData();
+      } catch (err: unknown) {
+        setError((err as ApiError).message || 'Failed to log reading');
+      }
+    }
+  };
 
   return (
     <div className="elder-theme" style={{ minHeight: '100vh', paddingBottom: '3rem' }}>
@@ -484,20 +537,22 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginTop: '1.5rem' }}>
           <button
             type="button"
-            onClick={() => alert('Talk to Haamika voice assistant will activate here in Phase 3!')}
+            onClick={() => setVoiceModalOpen(true)}
             className="btn btn-primary btn-elder-big"
             style={{ background: '#0284c7', borderColor: '#000000' }}
           >
             🎙️ {t.elder.talkToHaamika}
           </button>
 
-          <a
-            href="tel:112"
+          <button
+            type="button"
+            onClick={() => setSosModalOpen(true)}
             className="btn btn-danger btn-elder-big"
-            style={{ textDecoration: 'none', background: '#dc2626', borderColor: '#000000' }}
+            style={{ background: '#dc2626', borderColor: '#000000' }}
+            aria-label="Open SOS emergency screen"
           >
             🆘 {t.elder.sos}
-          </a>
+          </button>
 
           <a
             href="tel:+919876543210"
@@ -518,6 +573,26 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
           </a>
         </div>
       </main>
+
+      {/* ── Phase 3 Voice Assistant Modal ── */}
+      <VoiceModal
+        isOpen={voiceModalOpen}
+        onClose={() => setVoiceModalOpen(false)}
+        language={lang}
+        onEmergency={() => setSosModalOpen(true)}
+        onCallFamily={() => {
+          window.location.href = 'tel:+919876543210';
+        }}
+        onConfirmAction={handleVoiceConfirmAction}
+      />
+
+      {/* ── Phase 3 SOS Modal ── */}
+      <SosModal
+        isOpen={sosModalOpen}
+        onClose={() => setSosModalOpen(false)}
+        elderName={preferredName}
+        familyPhone="+919876543210"
+      />
 
       {/* ── Skip With Reason Dialog (SPEC §4.2) ── */}
       <Dialog

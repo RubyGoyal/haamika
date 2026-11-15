@@ -73,6 +73,20 @@ export type Language = z.infer<typeof LanguageEnum>;
 export const DayOfWeekEnum = z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']);
 export type DayOfWeek = z.infer<typeof DayOfWeekEnum>;
 
+export const VoiceIntentEnum = z.enum([
+  'WHAT_NOW',
+  'MARK_TAKEN',
+  'SKIP',
+  'MED_INFO',
+  'NEXT_APPOINTMENT',
+  'LOG_READING',
+  'ADD_QUESTION',
+  'CALL_FAMILY',
+  'EMERGENCY',
+  'UNKNOWN',
+]);
+export type VoiceIntent = z.infer<typeof VoiceIntentEnum>;
+
 /* ── Reusable sub-schemas ──────────────────────────────────────── */
 
 const TimeString = z.string().regex(/^\d{2}:\d{2}$/, 'Must be HH:mm');
@@ -398,3 +412,10 @@ export const UpdateSettingsInput = z
   })
   .strict();
 export type UpdateSettingsInputType = z.infer<typeof UpdateSettingsInput>;
+
+export const VoiceIntentInput = z
+  .object({
+    transcript: z.string().min(1).max(1000),
+  })
+  .strict();
+export type VoiceIntentInputType = z.infer<typeof VoiceIntentInput>;

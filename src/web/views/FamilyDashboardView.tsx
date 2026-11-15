@@ -5,7 +5,7 @@ import { PillIcon } from '../components/PillIcon.js';
 import { Dialog } from '../components/Dialog.js';
 import { LanguageToggle } from '../components/LanguageToggle.js';
 import { api, ApiError } from '../api/client.js';
-import { buildWhatsAppShareUrl } from '../../server/services/whatsappLink.js';
+import { buildWhatsAppShareUrl } from '../../shared/whatsappLink.js';
 import type {
   Medicine, Routine, Appointment, Proposal,
   Activity, OutboxEntry, PillColor, PillShape,

@@ -26,6 +26,9 @@ import { appointmentRoutes } from './routes/appointments.js';
 import { activityRoutes } from './routes/activity.js';
 import { outboxRoutes } from './routes/outbox.js';
 import { settingsRoutes } from './routes/settings.js';
+import { internalRoutes } from './routes/internal.js';
+import { voiceRoutes } from './routes/voice.js';
+import { sosRoutes } from './routes/sos.js';
 
 export function createApp(repo: Repository): express.Express {
   const app = express();
@@ -42,6 +45,7 @@ export function createApp(repo: Repository): express.Express {
 
   /* ── Public routes ───────────────────────────────────── */
   app.use(healthRoutes());
+  app.use('/internal', internalRoutes(repo));
 
   /* ── Auth routes (rate-limited) ──────────────────────── */
   app.use('/api/auth', authRateLimit, authRoutes(repo));
@@ -61,6 +65,8 @@ export function createApp(repo: Repository): express.Express {
   app.use('/api/activity', activityRoutes(repo));
   app.use('/api/outbox', outboxRoutes(repo));
   app.use('/api/settings', settingsRoutes(repo));
+  app.use('/api/voice', voiceRoutes(repo));
+  app.use('/api/sos', sosRoutes(repo));
 
   /* ── Error handler (must be last) ────────────────────── */
   app.use(errorHandler);

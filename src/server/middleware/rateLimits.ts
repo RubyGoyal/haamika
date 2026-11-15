@@ -33,3 +33,23 @@ export const generalRateLimit = rateLimit({
   skip: () => process.env.NODE_ENV === 'test',
   message: { error: 'Too many requests. Please slow down.' },
 });
+
+/** Rate limiter for /api/voice/intent — 30 requests per minute per IP. */
+export const voiceRateLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
+  message: { error: 'Too many voice requests. Please slow down.' },
+});
+
+/** Rate limiter for /api/sos — 5 requests per minute per IP. */
+export const sosRateLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
+  message: { error: 'Too many SOS requests. Please slow down.' },
+});

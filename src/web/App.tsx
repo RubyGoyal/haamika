@@ -8,7 +8,7 @@ import { JoinView } from './views/JoinView.js';
 import { ElderHomeView } from './views/ElderHomeView.js';
 import { FamilyDashboardView } from './views/FamilyDashboardView.js';
 import { CaretakerView } from './views/CaretakerView.js';
-import { api } from './api/client.js';
+import { api, clearOfflineStateAndCaches } from './api/client.js';
 
 type ViewMode = 'landing' | 'signin' | 'onboarding' | 'join' | 'authenticated';
 
@@ -39,6 +39,7 @@ export default function App() {
     } catch {
       // ignore
     }
+    clearOfflineStateAndCaches();
     setRole(null);
     setView('landing');
   };
