@@ -7,20 +7,146 @@ interface OnboardingViewProps {
   onBack: () => void;
 }
 
+interface OnboardingFormState {
+  elderName: string;
+  preferredName: string;
+  language: 'hi' | 'en';
+  timezone: string;
+  organizerName: string;
+  organizerEmail: string;
+  organizerPin: string;
+  elderPin: string;
+}
+
+const ElderFields: React.FC<{
+  formData: OnboardingFormState;
+  onChange: (d: OnboardingFormState) => void;
+}> = ({ formData, onChange }) => (
+  <>
+    <div className="form-group">
+      <label htmlFor="elderName" className="form-label">
+        Elder's Full Name
+      </label>
+      <input
+        id="elderName"
+        type="text"
+        required
+        className="form-input"
+        value={formData.elderName}
+        onChange={(e) => onChange({ ...formData, elderName: e.target.value })}
+        placeholder="e.g. Kamla Devi"
+      />
+    </div>
+    <div className="form-group">
+      <label htmlFor="preferredName" className="form-label">
+        What do you call them?
+      </label>
+      <input
+        id="preferredName"
+        type="text"
+        required
+        className="form-input"
+        value={formData.preferredName}
+        onChange={(e) => onChange({ ...formData, preferredName: e.target.value })}
+        placeholder="e.g. Amma, Dadi, Ma"
+      />
+    </div>
+    <div className="form-group">
+      <label htmlFor="language" className="form-label">
+        Elder's Preferred Language
+      </label>
+      <select
+        id="language"
+        className="form-select"
+        value={formData.language}
+        onChange={(e) => onChange({ ...formData, language: e.target.value as 'hi' | 'en' })}
+      >
+        <option value="hi">हिंदी (Hindi)</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </>
+);
+
+const OrganizerFields: React.FC<{
+  formData: OnboardingFormState;
+  onChange: (d: OnboardingFormState) => void;
+}> = ({ formData, onChange }) => (
+  <>
+    <div className="form-group">
+      <label htmlFor="organizerName" className="form-label">
+        Your Name (Family Organizer)
+      </label>
+      <input
+        id="organizerName"
+        type="text"
+        required
+        className="form-input"
+        value={formData.organizerName}
+        onChange={(e) => onChange({ ...formData, organizerName: e.target.value })}
+        placeholder="e.g. Rohan"
+      />
+    </div>
+    <div className="form-group">
+      <label htmlFor="organizerEmail" className="form-label">
+        Your Email (for Reminders)
+      </label>
+      <input
+        id="organizerEmail"
+        type="email"
+        className="form-input"
+        value={formData.organizerEmail}
+        onChange={(e) => onChange({ ...formData, organizerEmail: e.target.value })}
+        placeholder="rohan@example.com"
+      />
+    </div>
+    <div className="form-group">
+      <label htmlFor="organizerPin" className="form-label">
+        Your 6-Digit PIN
+      </label>
+      <input
+        id="organizerPin"
+        type="password"
+        pattern="[0-9]{6}"
+        maxLength={6}
+        required
+        className="form-input"
+        value={formData.organizerPin}
+        onChange={(e) => onChange({ ...formData, organizerPin: e.target.value })}
+        placeholder="6 digits"
+      />
+    </div>
+    <div className="form-group">
+      <label htmlFor="elderPin" className="form-label">
+        Elder's 4-Digit PIN (Set together with them)
+      </label>
+      <input
+        id="elderPin"
+        type="password"
+        pattern="[0-9]{4}"
+        maxLength={4}
+        required
+        className="form-input"
+        value={formData.elderPin}
+        onChange={(e) => onChange({ ...formData, elderPin: e.target.value })}
+        placeholder="4 digits"
+      />
+    </div>
+  </>
+);
+
 export const OnboardingView: React.FC<OnboardingViewProps> = ({ onSuccess, onBack }) => {
   const { t } = useI18n();
-
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<OnboardingFormState>({
     elderName: '',
     preferredName: 'Amma',
-    language: 'hi' as 'hi' | 'en',
+    language: 'hi',
     timezone: 'Asia/Kolkata',
     organizerName: '',
     organizerEmail: '',
     organizerPin: '',
     elderPin: '',
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +154,6 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({ onSuccess, onBac
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     try {
       await api.post('/api/circles', formData);
       onSuccess();
@@ -40,7 +165,10 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({ onSuccess, onBac
   };
 
   return (
-    <div className="container" style={{ maxWidth: '520px', margin: '0 auto', paddingTop: '1.5rem' }}>
+    <div
+      className="container"
+      style={{ maxWidth: '520px', margin: '0 auto', paddingTop: '1.5rem' }}
+    >
       <button
         type="button"
         onClick={onBack}
@@ -50,7 +178,6 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({ onSuccess, onBac
       >
         ← Back
       </button>
-
       <div className="card">
         <h1 style={{ fontSize: '1.8rem', color: '#0284c7', marginBottom: '0.5rem' }}>
           {t.auth.startCircle}
@@ -58,7 +185,6 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({ onSuccess, onBac
         <p style={{ color: '#475569', marginBottom: '1.5rem' }}>
           Set up a care circle for your elderly family member.
         </p>
-
         {error && (
           <div
             role="alert"
@@ -74,104 +200,10 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({ onSuccess, onBac
             {error}
           </div>
         )}
-
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="elderName" className="form-label">Elder's Full Name</label>
-            <input
-              id="elderName"
-              type="text"
-              required
-              className="form-input"
-              value={formData.elderName}
-              onChange={(e) => setFormData({ ...formData, elderName: e.target.value })}
-              placeholder="e.g. Kamla Devi"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="preferredName" className="form-label">What do you call them?</label>
-            <input
-              id="preferredName"
-              type="text"
-              required
-              className="form-input"
-              value={formData.preferredName}
-              onChange={(e) => setFormData({ ...formData, preferredName: e.target.value })}
-              placeholder="e.g. Amma, Dadi, Ma"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="language" className="form-label">Elder's Preferred Language</label>
-            <select
-              id="language"
-              className="form-select"
-              value={formData.language}
-              onChange={(e) => setFormData({ ...formData, language: e.target.value as 'hi' | 'en' })}
-            >
-              <option value="hi">हिंदी (Hindi)</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-
+          <ElderFields formData={formData} onChange={setFormData} />
           <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
-
-          <div className="form-group">
-            <label htmlFor="organizerName" className="form-label">Your Name (Family Organizer)</label>
-            <input
-              id="organizerName"
-              type="text"
-              required
-              className="form-input"
-              value={formData.organizerName}
-              onChange={(e) => setFormData({ ...formData, organizerName: e.target.value })}
-              placeholder="e.g. Rohan"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="organizerEmail" className="form-label">Your Email (for Reminders)</label>
-            <input
-              id="organizerEmail"
-              type="email"
-              className="form-input"
-              value={formData.organizerEmail}
-              onChange={(e) => setFormData({ ...formData, organizerEmail: e.target.value })}
-              placeholder="rohan@example.com"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="organizerPin" className="form-label">Your 6-Digit PIN</label>
-            <input
-              id="organizerPin"
-              type="password"
-              pattern="[0-9]{6}"
-              maxLength={6}
-              required
-              className="form-input"
-              value={formData.organizerPin}
-              onChange={(e) => setFormData({ ...formData, organizerPin: e.target.value })}
-              placeholder="6 digits"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="elderPin" className="form-label">Elder's 4-Digit PIN (Set together with them)</label>
-            <input
-              id="elderPin"
-              type="password"
-              pattern="[0-9]{4}"
-              maxLength={4}
-              required
-              className="form-input"
-              value={formData.elderPin}
-              onChange={(e) => setFormData({ ...formData, elderPin: e.target.value })}
-              placeholder="4 digits"
-            />
-          </div>
-
+          <OrganizerFields formData={formData} onChange={setFormData} />
           <button
             type="submit"
             disabled={loading}

@@ -36,33 +36,61 @@ describe('FamilyDashboardView', () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation((url: RequestInfo | URL) => {
       const u = String(url);
       if (u.endsWith('/api/me')) {
-        return Promise.resolve(new Response(JSON.stringify({ circle: { preferredName: 'Amma' } }), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify({ circle: { preferredName: 'Amma' } }), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
       if (u.includes('/api/adherence')) {
-        return Promise.resolve(new Response(JSON.stringify(mockAdherence), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify(mockAdherence), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
       if (u.includes('/api/medicines')) {
-        return Promise.resolve(new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }),
+        );
       }
       if (u.includes('/api/routines')) {
-        return Promise.resolve(new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }),
+        );
       }
       if (u.includes('/api/proposals')) {
-        return Promise.resolve(new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }),
+        );
       }
       if (u.includes('/api/appointments')) {
-        return Promise.resolve(new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }),
+        );
       }
       if (u.includes('/api/members')) {
-        return Promise.resolve(new Response(JSON.stringify([{ id: 'm1', name: 'Rohan', role: 'family' }]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([{ id: 'm1', name: 'Rohan', role: 'family' }]), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
       if (u.includes('/api/activity')) {
-        return Promise.resolve(new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }),
+        );
       }
       if (u.includes('/api/outbox')) {
-        return Promise.resolve(new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } }),
+        );
       }
-      return Promise.resolve(new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } }));
+      return Promise.resolve(
+        new Response(JSON.stringify({ ok: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
     });
   });
 

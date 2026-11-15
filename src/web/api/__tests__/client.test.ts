@@ -22,7 +22,10 @@ describe('API Client Offline Queuing (R8, SPEC §4.11 / Correction 2)', () => {
       status: 'taken',
     };
 
-    const res = await api.post<{ ok: boolean; id: string; offline: boolean }>('/api/events', eventPayload);
+    const res = await api.post<{ ok: boolean; id: string; offline: boolean }>(
+      '/api/events',
+      eventPayload,
+    );
 
     expect(res.offline).toBe(true);
     expect(res.id).toBe('2026-11-15_morning_medicine_med-123');

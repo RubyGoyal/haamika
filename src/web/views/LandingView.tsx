@@ -7,27 +7,81 @@ interface LandingViewProps {
   onNavigate: (view: string, params?: Record<string, string>) => void;
 }
 
-export const LandingView: React.FC<LandingViewProps> = ({ onNavigate }) => {
-  const { t } = useI18n();
-  const [demoInfo, setDemoInfo] = useState<{
-    enabled: boolean;
-    code?: string;
-    elderPin?: string;
-    familyPin?: string;
-    caretakerPin?: string;
-  } | null>(null);
+interface DemoInfo {
+  enabled: boolean;
+  code?: string;
+  elderPin?: string;
+  familyPin?: string;
+  caretakerPin?: string;
+}
 
+function useDemoInfo() {
+  const [demoInfo, setDemoInfo] = useState<DemoInfo | null>(null);
   useEffect(() => {
-    api.get<{ enabled: boolean; code?: string; elderPin?: string; familyPin?: string; caretakerPin?: string }>(
-      '/api/auth/demo',
-    )
+    api
+      .get<DemoInfo>('/api/auth/demo')
       .then(setDemoInfo)
       .catch(() => setDemoInfo({ enabled: false }));
   }, []);
+  return demoInfo;
+}
+
+const DemoCard: React.FC<{
+  demoInfo: DemoInfo;
+  onDemoSignIn: (role: 'elder' | 'family' | 'caretaker') => void;
+}> = ({ demoInfo, onDemoSignIn }) => {
+  const { t } = useI18n();
+  if (!demoInfo.enabled) return null;
+  return (
+    <div
+      className="card"
+      style={{ marginTop: '1.5rem', background: '#fef3c7', borderColor: '#d97706' }}
+    >
+      <h2 style={{ fontSize: '1.15rem', color: '#92400e', marginBottom: '0.75rem' }}>
+        🎯 {t.auth.tryDemo} (Circle: {demoInfo.code})
+      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <button
+          type="button"
+          onClick={() => onDemoSignIn('elder')}
+          className="btn btn-secondary"
+          style={{ background: '#ffffff', borderColor: '#d97706', fontWeight: 700 }}
+        >
+          👵 {t.auth.demoElder} (PIN: 2580)
+        </button>
+        <button
+          type="button"
+          onClick={() => onDemoSignIn('family')}
+          className="btn btn-secondary"
+          style={{ background: '#ffffff', borderColor: '#d97706', fontWeight: 700 }}
+        >
+          👨‍💼 {t.auth.demoFamily} (PIN: 135790)
+        </button>
+        <button
+          type="button"
+          onClick={() => onDemoSignIn('caretaker')}
+          className="btn btn-secondary"
+          style={{ background: '#ffffff', borderColor: '#d97706', fontWeight: 700 }}
+        >
+          👩‍⚕️ {t.auth.demoCaretaker} (PIN: 246802)
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export const LandingView: React.FC<LandingViewProps> = ({ onNavigate }) => {
+  const { t } = useI18n();
+  const demoInfo = useDemoInfo();
 
   const handleDemoSignIn = (role: 'elder' | 'family' | 'caretaker') => {
     if (!demoInfo?.code) return;
-    const pin = role === 'elder' ? demoInfo.elderPin : role === 'family' ? demoInfo.familyPin : demoInfo.caretakerPin;
+    const pin =
+      role === 'elder'
+        ? demoInfo.elderPin
+        : role === 'family'
+          ? demoInfo.familyPin
+          : demoInfo.caretakerPin;
     onNavigate('signin', { prefillCode: demoInfo.code, prefillRole: role, prefillPin: pin || '' });
   };
 
@@ -43,12 +97,18 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigate }) => {
         <p style={{ fontSize: '1.4rem', fontWeight: 600, color: '#0f172a' }}>
           <em>{t.slogan}</em>
         </p>
-        <p style={{ fontSize: '1.1rem', color: '#475569', marginTop: '0.5rem' }}>
-          {t.tagline}
-        </p>
+        <p style={{ fontSize: '1.1rem', color: '#475569', marginTop: '0.5rem' }}>{t.tagline}</p>
       </header>
 
-      <main style={{ maxWidth: '440px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <main
+        style={{
+          maxWidth: '440px',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}
+      >
         <button
           type="button"
           onClick={() => onNavigate('signin')}
@@ -57,7 +117,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigate }) => {
         >
           🔑 {t.auth.openCircle}
         </button>
-
         <button
           type="button"
           onClick={() => onNavigate('onboarding')}
@@ -66,7 +125,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigate }) => {
         >
           ➕ {t.auth.startCircle}
         </button>
-
         <button
           type="button"
           onClick={() => onNavigate('join')}
@@ -75,40 +133,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigate }) => {
         >
           ✉️ {t.auth.joinCircle}
         </button>
-
-        {demoInfo?.enabled && (
-          <div className="card" style={{ marginTop: '1.5rem', background: '#fef3c7', borderColor: '#d97706' }}>
-            <h2 style={{ fontSize: '1.15rem', color: '#92400e', marginBottom: '0.75rem' }}>
-              🎯 {t.auth.tryDemo} (Circle: {demoInfo.code})
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              <button
-                type="button"
-                onClick={() => handleDemoSignIn('elder')}
-                className="btn btn-secondary"
-                style={{ background: '#ffffff', borderColor: '#d97706', fontWeight: 700 }}
-              >
-                👵 {t.auth.demoElder} (PIN: 2580)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoSignIn('family')}
-                className="btn btn-secondary"
-                style={{ background: '#ffffff', borderColor: '#d97706', fontWeight: 700 }}
-              >
-                👨‍💼 {t.auth.demoFamily} (PIN: 135790)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoSignIn('caretaker')}
-                className="btn btn-secondary"
-                style={{ background: '#ffffff', borderColor: '#d97706', fontWeight: 700 }}
-              >
-                👩‍⚕️ {t.auth.demoCaretaker} (PIN: 246802)
-              </button>
-            </div>
-          </div>
-        )}
+        {demoInfo && <DemoCard demoInfo={demoInfo} onDemoSignIn={handleDemoSignIn} />}
       </main>
     </div>
   );

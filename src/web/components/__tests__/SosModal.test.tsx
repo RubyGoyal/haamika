@@ -11,11 +11,14 @@ import { SosModal } from '../SosModal.js';
 expect.extend(matchers);
 
 beforeEach(() => {
-  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-    ok: true,
-    headers: { get: () => 'application/json' },
-    json: async () => ({ ok: true, alertedMembers: 2 }),
-  }));
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      ok: true,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ ok: true, alertedMembers: 2 }),
+    }),
+  );
 });
 
 describe('SosModal component (R8, SPEC §4.10)', () => {

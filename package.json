@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.server.json && tsc --noEmit -p tsconfig.web.json",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\""
   },
   "dependencies": {
     "@google-cloud/firestore": "9.4.1",

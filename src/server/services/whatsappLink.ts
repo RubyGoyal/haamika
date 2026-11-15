@@ -8,7 +8,8 @@ export function buildWhatsAppShareUrl(options: {
   adherencePercentage: number;
   todaySummary: string;
 }): string {
-  const message = `*Haamika Update for ${options.elderName}*\n\n` +
+  const message =
+    `*Haamika Update for ${options.elderName}*\n\n` +
     `Today: ${options.todaySummary}\n` +
     `7-Day Adherence: ${options.adherencePercentage}%\n\n` +
     `_Shared from Haamika - Your yes, our care_`;

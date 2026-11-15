@@ -55,7 +55,10 @@ export function eventRoutes(repo: Repository): Router {
       const med = await repo.getMedicine(circleId, data.itemId);
       if (med) {
         itemName = med.name;
-        if ((data.status === 'taken' || data.status === 'taken_late') && typeof med.stockCount === 'number') {
+        if (
+          (data.status === 'taken' || data.status === 'taken_late') &&
+          typeof med.stockCount === 'number'
+        ) {
           const newStock = Math.max(0, med.stockCount - med.dosePerSlot);
           await repo.updateMedicine(circleId, med.id, { stockCount: newStock });
         }
@@ -68,9 +71,10 @@ export function eventRoutes(repo: Repository): Router {
     }
 
     // Log activity
-    const actionDesc = data.status === 'skipped'
-      ? `Skipped ${itemName}${data.reason ? ` (${data.reason})` : ''}`
-      : `Marked ${itemName} as ${data.status}${data.reading ? ` [Reading: ${data.reading}]` : ''}`;
+    const actionDesc =
+      data.status === 'skipped'
+        ? `Skipped ${itemName}${data.reason ? ` (${data.reason})` : ''}`
+        : `Marked ${itemName} as ${data.status}${data.reading ? ` [Reading: ${data.reading}]` : ''}`;
 
     await repo.createActivity(circleId, {
       id: randomUUID(),

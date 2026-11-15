@@ -190,7 +190,11 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
   const activeSlot: Slot = scheduleData?.currentSlot || 'morning';
   const currentSlotData = scheduleData?.slots.find((s) => s.slot === activeSlot);
   const itemsInCurrentSlot = currentSlotData?.items || [];
-  const allSlotTaken = itemsInCurrentSlot.length > 0 && itemsInCurrentSlot.every((i) => i.status === 'taken' || i.status === 'taken_late' || i.status === 'skipped');
+  const allSlotTaken =
+    itemsInCurrentSlot.length > 0 &&
+    itemsInCurrentSlot.every(
+      (i) => i.status === 'taken' || i.status === 'taken_late' || i.status === 'skipped',
+    );
 
   // WhatsApp family URL
   const familyMember = members.find((m) => m.role === 'family');
@@ -199,11 +203,18 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
     elderName: preferredName,
     adherencePercentage: 100,
     todaySummary: allSlotTaken
-      ? (lang === 'hi' ? 'आज की दवाइयां ले ली हैं' : 'All doses taken today')
-      : (lang === 'hi' ? 'दवाई का समय हो गया है' : 'Checked medicines today'),
+      ? lang === 'hi'
+        ? 'आज की दवाइयां ले ली हैं'
+        : 'All doses taken today'
+      : lang === 'hi'
+        ? 'दवाई का समय हो गया है'
+        : 'Checked medicines today',
   });
 
-  const handleVoiceConfirmAction = async (intent: VoiceIntent, payload?: Record<string, unknown>) => {
+  const handleVoiceConfirmAction = async (
+    intent: VoiceIntent,
+    payload?: Record<string, unknown>,
+  ) => {
     if (intent === 'MARK_TAKEN') {
       const slotToTake = (payload?.slot as Slot) || activeSlot;
       await handleMarkAllSlotTaken(slotToTake, itemsInCurrentSlot);
@@ -255,9 +266,7 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
         }}
       >
         <div>
-          <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#0369a1' }}>
-            {t.brand}
-          </span>
+          <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#0369a1' }}>{t.brand}</span>
           <span style={{ marginLeft: '0.75rem', fontSize: '1.1rem', color: '#44403c' }}>
             👵 {preferredName}
           </span>
@@ -311,7 +320,14 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
             className="card elder-card"
             style={{ background: '#fef3c7', borderColor: '#d97706', marginBottom: '2rem' }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.75rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.45rem', color: '#92400e', fontWeight: 800 }}>
                 🔔 {t.elder.consentTitle} ({proposals.length})
               </h2>
@@ -344,7 +360,14 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
                     marginBottom: '1rem',
                   }}
                 >
-                  <p style={{ fontSize: '1.3rem', fontWeight: 700, color: '#000000', marginBottom: '0.4rem' }}>
+                  <p
+                    style={{
+                      fontSize: '1.3rem',
+                      fontWeight: 700,
+                      color: '#000000',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
                     {medName} {strength && `(${strength})`}
                   </p>
                   {purpose && (
@@ -364,7 +387,13 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
                       type="button"
                       onClick={() => handleProposalDecision(prop.id, 'approved')}
                       className="btn btn-success"
-                      style={{ flex: 1, minHeight: '58px', fontSize: '1.25rem', fontWeight: 800, borderRadius: '14px' }}
+                      style={{
+                        flex: 1,
+                        minHeight: '58px',
+                        fontSize: '1.25rem',
+                        fontWeight: 800,
+                        borderRadius: '14px',
+                      }}
                     >
                       ✓ {t.elder.okay}
                     </button>
@@ -372,7 +401,13 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
                       type="button"
                       onClick={() => handleProposalDecision(prop.id, 'declined')}
                       className="btn btn-secondary"
-                      style={{ flex: 1, minHeight: '58px', fontSize: '1.15rem', fontWeight: 700, borderRadius: '14px' }}
+                      style={{
+                        flex: 1,
+                        minHeight: '58px',
+                        fontSize: '1.15rem',
+                        fontWeight: 700,
+                        borderRadius: '14px',
+                      }}
                     >
                       ✕ {t.elder.notNow}
                     </button>
@@ -384,20 +419,52 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
         )}
 
         {/* ── Main Now Card per SPEC §4.2 ── */}
-        <div className="card elder-card" style={{ background: '#ffffff', border: '4px solid #000000' }}>
-          <div style={{ borderBottom: '3px solid #000000', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
-            <span style={{ fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', color: '#0369a1' }}>
+        <div
+          className="card elder-card"
+          style={{ background: '#ffffff', border: '4px solid #000000' }}
+        >
+          <div
+            style={{
+              borderBottom: '3px solid #000000',
+              paddingBottom: '0.75rem',
+              marginBottom: '1.25rem',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '1.15rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                color: '#0369a1',
+              }}
+            >
               {t.slots[activeSlot]}
             </span>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#000000', marginTop: '0.2rem' }}>
+            <h1
+              style={{ fontSize: '1.8rem', fontWeight: 900, color: '#000000', marginTop: '0.2rem' }}
+            >
               {t.elder.nowTitle}
             </h1>
           </div>
 
           {/* List of items */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              marginBottom: '1.5rem',
+            }}
+          >
             {itemsInCurrentSlot.length === 0 ? (
-              <p style={{ fontSize: '1.3rem', color: '#57534e', textAlign: 'center', padding: '1.5rem 0' }}>
+              <p
+                style={{
+                  fontSize: '1.3rem',
+                  color: '#57534e',
+                  textAlign: 'center',
+                  padding: '1.5rem 0',
+                }}
+              >
                 No medicines or routines scheduled for {t.slots[activeSlot]}.
               </p>
             ) : (
@@ -420,7 +487,11 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       {item.type === 'medicine' && item.medicine ? (
-                        <PillIcon color={item.medicine.pillColor} shape={item.medicine.pillShape} size={48} />
+                        <PillIcon
+                          color={item.medicine.pillColor}
+                          shape={item.medicine.pillShape}
+                          size={48}
+                        />
                       ) : (
                         <span style={{ fontSize: '2rem' }}>🩺</span>
                       )}
@@ -453,7 +524,12 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
                             type="button"
                             onClick={() => handleMarkTaken(activeSlot, item)}
                             className="btn btn-success"
-                            style={{ minHeight: '56px', fontSize: '1.2rem', fontWeight: 800, borderRadius: '12px' }}
+                            style={{
+                              minHeight: '56px',
+                              fontSize: '1.2rem',
+                              fontWeight: 800,
+                              borderRadius: '12px',
+                            }}
                             aria-label={`Mark ${item.name} as taken`}
                           >
                             ✓
@@ -465,7 +541,12 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
                               setSkipDialogOpen(true);
                             }}
                             className="btn btn-secondary"
-                            style={{ minHeight: '56px', fontSize: '1rem', fontWeight: 700, borderRadius: '12px' }}
+                            style={{
+                              minHeight: '56px',
+                              fontSize: '1rem',
+                              fontWeight: 700,
+                              borderRadius: '12px',
+                            }}
                             aria-label={`Skip ${item.name} with reason`}
                           >
                             Skip
@@ -511,19 +592,35 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
 
         {/* ── Next Doctor Visit Card ── */}
         {scheduleData?.nextAppointment && (
-          <div className="card elder-card" style={{ background: '#f0fdf4', borderColor: '#16a34a' }}>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#15803d', marginBottom: '0.4rem' }}>
+          <div
+            className="card elder-card"
+            style={{ background: '#f0fdf4', borderColor: '#16a34a' }}
+          >
+            <h2
+              style={{
+                fontSize: '1.35rem',
+                fontWeight: 800,
+                color: '#15803d',
+                marginBottom: '0.4rem',
+              }}
+            >
               🩺 {t.elder.nextAppt}
             </h2>
             <p style={{ fontSize: '1.3rem', fontWeight: 700, color: '#000000' }}>
               {scheduleData.nextAppointment.doctorName}
-              {scheduleData.nextAppointment.specialty ? ` (${scheduleData.nextAppointment.specialty})` : ''}
+              {scheduleData.nextAppointment.specialty
+                ? ` (${scheduleData.nextAppointment.specialty})`
+                : ''}
             </p>
             <p style={{ fontSize: '1.1rem', color: '#334155', marginTop: '0.2rem' }}>
-              📅 {new Date(scheduleData.nextAppointment.startsAt).toLocaleString(lang === 'hi' ? 'hi-IN' : 'en-US', {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-              })}
+              📅{' '}
+              {new Date(scheduleData.nextAppointment.startsAt).toLocaleString(
+                lang === 'hi' ? 'hi-IN' : 'en-US',
+                {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                },
+              )}
             </p>
             {scheduleData.nextAppointment.place && (
               <p style={{ fontSize: '1.1rem', color: '#334155', marginTop: '0.2rem' }}>
@@ -534,7 +631,14 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
         )}
 
         {/* ── Big Action Buttons (Talk, Call, WhatsApp, SOS) ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginTop: '1.5rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '1rem',
+            marginTop: '1.5rem',
+          }}
+        >
           <button
             type="button"
             onClick={() => setVoiceModalOpen(true)}
@@ -567,7 +671,12 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-secondary btn-elder-big"
-            style={{ textDecoration: 'none', background: '#dcfce7', borderColor: '#000000', color: '#15803d' }}
+            style={{
+              textDecoration: 'none',
+              background: '#dcfce7',
+              borderColor: '#000000',
+              color: '#15803d',
+            }}
           >
             💬 {t.elder.whatsAppFamily}
           </a>
@@ -601,7 +710,8 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
         title={t.elder.skipWithReason}
       >
         <p style={{ fontSize: '1.15rem', color: '#44403c', marginBottom: '1.25rem' }}>
-          Please choose a reason for skipping {itemToSkip?.name}. This is recorded as your healthcare decision.
+          Please choose a reason for skipping {itemToSkip?.name}. This is recorded as your
+          healthcare decision.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <button
@@ -646,7 +756,8 @@ export const ElderHomeView: React.FC<ElderHomeViewProps> = ({ onSignOut }) => {
         title="Your Care Circle Members"
       >
         <p style={{ fontSize: '1.05rem', color: '#44403c', marginBottom: '1rem' }}>
-          You are at the center of your care. You can remove any member from your circle at any time.
+          You are at the center of your care. You can remove any member from your circle at any
+          time.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {(members || []).map((m) => (

@@ -71,12 +71,12 @@ const INTENT_SCHEMA = {
   required: ['intent'],
 };
 
+const GEMINI_TIMEOUT_MS = 4000;
+
 /**
  * Classify a scrubbed voice transcript using Gemini structured output.
  */
-export async function classifyWithGemini(
-  scrubbedTranscript: string,
-): Promise<VoiceIntent | null> {
+export async function classifyWithGemini(scrubbedTranscript: string): Promise<VoiceIntent | null> {
   if (mockClassifier) {
     return mockClassifier(scrubbedTranscript);
   }
@@ -107,7 +107,10 @@ export async function classifyWithGemini(
         },
       }),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Gemini classification timeout (4s)')), 4000),
+        setTimeout(
+          () => reject(new Error('Gemini classification timeout (4s)')),
+          GEMINI_TIMEOUT_MS,
+        ),
       ),
     ]);
 

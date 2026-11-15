@@ -11,7 +11,11 @@ if (root) {
   );
 }
 
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator && import.meta.env.MODE !== 'test') {
+if (
+  typeof window !== 'undefined' &&
+  'serviceWorker' in navigator &&
+  import.meta.env.MODE !== 'test'
+) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
       // SW registration fallback

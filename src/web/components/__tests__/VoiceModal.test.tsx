@@ -11,16 +11,19 @@ import { VoiceModal } from '../VoiceModal.js';
 expect.extend(matchers);
 
 beforeEach(() => {
-  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-    ok: true,
-    headers: { get: () => 'application/json' },
-    json: async () => ({
-      intent: 'MARK_TAKEN',
-      replyText: 'Mark all morning medicines as taken?',
-      requiresConfirmation: true,
-      actionPayload: { slot: 'morning' },
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      ok: true,
+      headers: { get: () => 'application/json' },
+      json: async () => ({
+        intent: 'MARK_TAKEN',
+        replyText: 'Mark all morning medicines as taken?',
+        requiresConfirmation: true,
+        actionPayload: { slot: 'morning' },
+      }),
     }),
-  }));
+  );
 });
 
 describe('VoiceModal component (R8, R9, SPEC §4.3)', () => {

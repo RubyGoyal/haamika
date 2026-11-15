@@ -120,10 +120,7 @@ describe('Medicines & Proposals (R1, R9)', () => {
       .expect(200);
 
     // 4. Medicine is now active!
-    const medsRes = await request(app)
-      .get('/api/medicines')
-      .set('Cookie', elderCookie)
-      .expect(200);
+    const medsRes = await request(app).get('/api/medicines').set('Cookie', elderCookie).expect(200);
 
     const approvedMed = medsRes.body.find((m: { id: string }) => m.id === medId);
     expect(approvedMed.status).toBe('active');
@@ -475,10 +472,7 @@ describe('Routines, Schedule & Settings (R1, R3)', () => {
     expect(createRes.body.id).toBeTruthy();
 
     // View routines
-    const viewRes = await request(app)
-      .get('/api/routines')
-      .set('Cookie', elderCookie)
-      .expect(200);
+    const viewRes = await request(app).get('/api/routines').set('Cookie', elderCookie).expect(200);
 
     expect(viewRes.body).toHaveLength(1);
 
@@ -525,10 +519,7 @@ describe('Routines, Schedule & Settings (R1, R3)', () => {
     const { familyCookie, elderCookie } = await setupCircleAndSessions();
 
     // View settings
-    const getRes = await request(app)
-      .get('/api/settings')
-      .set('Cookie', elderCookie)
-      .expect(200);
+    const getRes = await request(app).get('/api/settings').set('Cookie', elderCookie).expect(200);
 
     expect(getRes.body.elderName).toBe('Kamla Devi');
 
@@ -633,7 +624,10 @@ describe('Demo Mode Seeding (SPEC §4.12)', () => {
     expect(nightInsight.missCount).toBeGreaterThanOrEqual(3);
 
     // Check pending proposal
-    const props = await request(app).get('/api/proposals?status=pending').set('Cookie', cookie).expect(200);
+    const props = await request(app)
+      .get('/api/proposals?status=pending')
+      .set('Cookie', cookie)
+      .expect(200);
     expect(props.body).toHaveLength(1);
     expect(props.body[0].payload.medicineName).toContain('Calcium');
 

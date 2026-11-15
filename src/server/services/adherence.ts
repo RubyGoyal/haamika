@@ -15,6 +15,9 @@ export interface AdherenceResult {
   total: number;
 }
 
+const PERCENT_MULTIPLIER = 100;
+const PERFECT_PERCENTAGE = 100;
+
 /** Compute adherence across a set of events. */
 export function computeAdherence(events: ScheduleEvent[]): AdherenceResult {
   let taken = 0;
@@ -42,7 +45,10 @@ export function computeAdherence(events: ScheduleEvent[]): AdherenceResult {
 
   const total = taken + takenLate + skipped + missed;
   const denominator = total - skipped;
-  const percentage = denominator > 0 ? Math.round(((taken + takenLate) / denominator) * 100) : 100;
+  const percentage =
+    denominator > 0
+      ? Math.round(((taken + takenLate) / denominator) * PERCENT_MULTIPLIER)
+      : PERFECT_PERCENTAGE;
 
   return { percentage, taken, takenLate, skipped, missed, total };
 }

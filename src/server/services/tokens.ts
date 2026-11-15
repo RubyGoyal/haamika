@@ -6,15 +6,20 @@ import { randomBytes, createHash } from 'node:crypto';
 import * as jose from 'jose';
 import type { SessionPayload } from '../../shared/types.js';
 
+const CIRCLE_CODE_LEN = 8;
+const CIRCLE_CODE_HALF_LEN = 4;
+const INVITE_BYTES = 6;
+const VISIT_TOKEN_BYTES = 32;
+
 /**
  * Generate a circle code: 8 characters from A-HJ-NP-Z2-9 (no I, O, 0, 1),
  * displayed as XXXX-XXXX.
  */
 export function generateCircleCode(): string {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const bytes = randomBytes(8);
+  const bytes = randomBytes(CIRCLE_CODE_LEN);
   let code = '';
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < CIRCLE_CODE_LEN; i++) {
     code += alphabet[bytes[i]! % alphabet.length];
   }
   return code;
@@ -23,7 +28,7 @@ export function generateCircleCode(): string {
 /** Format a circle code for display: XXXX-XXXX. */
 export function formatCircleCode(code: string): string {
   const clean = code.replace(/-/g, '').toUpperCase();
-  return `${clean.slice(0, 4)}-${clean.slice(4, 8)}`;
+  return `${clean.slice(0, CIRCLE_CODE_HALF_LEN)}-${clean.slice(CIRCLE_CODE_HALF_LEN, CIRCLE_CODE_LEN)}`;
 }
 
 /** Normalize user input for circle code: strip hyphens, uppercase. */
@@ -33,7 +38,7 @@ export function normalizeCircleCode(input: string): string {
 
 /** Generate a single-use invite code: 12 random hex characters. */
 export function generateInviteCode(): string {
-  return randomBytes(6).toString('hex').toUpperCase();
+  return randomBytes(INVITE_BYTES).toString('hex').toUpperCase();
 }
 
 /** SHA-256 hash (hex) for storing codes and tokens without exposing the originals. */
@@ -43,7 +48,7 @@ export function sha256(value: string): string {
 
 /** Generate a random token for doctor visit links. */
 export function generateVisitToken(): string {
-  return randomBytes(32).toString('hex');
+  return randomBytes(VISIT_TOKEN_BYTES).toString('hex');
 }
 
 /** Sign a JWT session token. */

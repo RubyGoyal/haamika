@@ -69,7 +69,13 @@ export function adherenceRoutes(repo: Repository): Router {
     const insights = detectInsights(events7d, medicineNames, circle.anchors);
 
     // Compute day-by-day 7-day adherence for the BarChart
-    const dailyStats: Array<{ date: string; dayName: string; percentage: number; taken: number; total: number }> = [];
+    const dailyStats: Array<{
+      date: string;
+      dayName: string;
+      percentage: number;
+      taken: number;
+      total: number;
+    }> = [];
     for (let i = 6; i >= 0; i--) {
       const dt = today.minus({ days: i });
       const dStr = dt.toISODate()!;

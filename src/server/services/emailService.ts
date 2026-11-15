@@ -12,6 +12,7 @@ import { getConfig } from '../config.js';
 import { logger } from './logger.js';
 
 let transporterInstance: Transporter | null = null;
+const DEFAULT_SMTPS_PORT = 465;
 
 export function getTransporter(): Transporter | null {
   if (transporterInstance) return transporterInstance;
@@ -20,8 +21,8 @@ export function getTransporter(): Transporter | null {
   if (config.SMTP_USER && config.SMTP_PASS) {
     transporterInstance = nodemailer.createTransport({
       host: config.SMTP_HOST || 'smtp.gmail.com',
-      port: config.SMTP_PORT || 465,
-      secure: config.SMTP_PORT === 465,
+      port: config.SMTP_PORT || DEFAULT_SMTPS_PORT,
+      secure: config.SMTP_PORT === DEFAULT_SMTPS_PORT,
       auth: {
         user: config.SMTP_USER,
         pass: config.SMTP_PASS,

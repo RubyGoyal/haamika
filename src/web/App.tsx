@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { I18nProvider } from './i18n/index.js';
 import './styles/theme.css';
 import { LandingView } from './views/LandingView.js';
@@ -11,16 +11,16 @@ import { CaretakerView } from './views/CaretakerView.js';
 import { api, clearOfflineStateAndCaches } from './api/client.js';
 
 type ViewMode = 'landing' | 'signin' | 'onboarding' | 'join' | 'authenticated';
+type UserRole = 'elder' | 'family' | 'caretaker';
 
-export default function App() {
+function useAuthSession() {
   const [view, setView] = useState<ViewMode>('landing');
-  const [role, setRole] = useState<'elder' | 'family' | 'caretaker' | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [navParams, setNavParams] = useState<Record<string, string>>({});
 
-  // Check if session cookie is already present
   useEffect(() => {
-    api.get<{ role: 'elder' | 'family' | 'caretaker' }>('/api/me')
+    api
+      .get<{ role: UserRole }>('/api/me')
       .then((res) => {
         setRole(res.role);
         setView('authenticated');
@@ -33,25 +33,79 @@ export default function App() {
       });
   }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       await api.post('/api/auth/signout');
     } catch {
-      // ignore
+      /* ignore */
     }
     clearOfflineStateAndCaches();
     setRole(null);
     setView('landing');
-  };
+  }, []);
 
-  const handleSignInSuccess = (userRole: 'elder' | 'family' | 'caretaker') => {
+  const handleSignInSuccess = useCallback((userRole: UserRole) => {
     setRole(userRole);
     setView('authenticated');
-  };
+  }, []);
+
+  return { view, setView, role, initialLoading, handleSignOut, handleSignInSuccess };
+}
+
+const AuthRouter: React.FC<{ role: UserRole | null; onSignOut: () => void }> = ({
+  role,
+  onSignOut,
+}) => {
+  if (role === 'elder') return <ElderHomeView onSignOut={onSignOut} />;
+  if (role === 'family') return <FamilyDashboardView onSignOut={onSignOut} />;
+  if (role === 'caretaker') return <CaretakerView onSignOut={onSignOut} />;
+  return null;
+};
+
+const PublicRouter: React.FC<{
+  view: ViewMode;
+  navParams: Record<string, string>;
+  onNavigate: (t: ViewMode, p?: Record<string, string>) => void;
+  onSuccess: (role: UserRole) => void;
+}> = ({ view, navParams, onNavigate, onSuccess }) => {
+  if (view === 'landing')
+    return <LandingView onNavigate={(t, p) => onNavigate(t as ViewMode, p)} />;
+  if (view === 'signin') {
+    return (
+      <SignInView
+        onSuccess={onSuccess}
+        onBack={() => onNavigate('landing')}
+        prefillCode={navParams.prefillCode}
+        prefillRole={navParams.prefillRole as UserRole | undefined}
+        prefillPin={navParams.prefillPin}
+      />
+    );
+  }
+  if (view === 'onboarding')
+    return (
+      <OnboardingView onSuccess={() => onSuccess('family')} onBack={() => onNavigate('landing')} />
+    );
+  if (view === 'join')
+    return <JoinView onSuccess={onSuccess} onBack={() => onNavigate('landing')} />;
+  return null;
+};
+
+export default function App() {
+  const { view, setView, role, initialLoading, handleSignOut, handleSignInSuccess } =
+    useAuthSession();
+  const [navParams, setNavParams] = useState<Record<string, string>>({});
 
   if (initialLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'system-ui' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontFamily: 'system-ui',
+        }}
+      >
         <p style={{ fontSize: '1.25rem', fontWeight: 600 }}>Loading Haamika...</p>
       </div>
     );
@@ -59,46 +113,17 @@ export default function App() {
 
   return (
     <I18nProvider>
-      {view === 'authenticated' && role === 'elder' && (
-        <ElderHomeView onSignOut={handleSignOut} />
-      )}
-      {view === 'authenticated' && role === 'family' && (
-        <FamilyDashboardView onSignOut={handleSignOut} />
-      )}
-      {view === 'authenticated' && role === 'caretaker' && (
-        <CaretakerView onSignOut={handleSignOut} />
-      )}
-
-      {view === 'landing' && (
-        <LandingView
+      {view === 'authenticated' ? (
+        <AuthRouter role={role} onSignOut={handleSignOut} />
+      ) : (
+        <PublicRouter
+          view={view}
+          navParams={navParams}
           onNavigate={(target, params) => {
             if (params) setNavParams(params);
-            setView(target as ViewMode);
+            setView(target);
           }}
-        />
-      )}
-
-      {view === 'signin' && (
-        <SignInView
           onSuccess={handleSignInSuccess}
-          onBack={() => setView('landing')}
-          prefillCode={navParams.prefillCode}
-          prefillRole={navParams.prefillRole as 'elder' | 'family' | 'caretaker' | undefined}
-          prefillPin={navParams.prefillPin}
-        />
-      )}
-
-      {view === 'onboarding' && (
-        <OnboardingView
-          onSuccess={() => handleSignInSuccess('family')}
-          onBack={() => setView('landing')}
-        />
-      )}
-
-      {view === 'join' && (
-        <JoinView
-          onSuccess={(joinedRole) => handleSignInSuccess(joinedRole)}
-          onBack={() => setView('landing')}
         />
       )}
     </I18nProvider>

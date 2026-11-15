@@ -67,18 +67,38 @@ describe('ElderHomeView', () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation((url: RequestInfo | URL) => {
       const u = String(url);
       if (u.includes('/api/schedule/today')) {
-        return Promise.resolve(new Response(JSON.stringify(mockSchedule), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify(mockSchedule), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
       if (u.includes('/api/proposals')) {
-        return Promise.resolve(new Response(JSON.stringify(mockProposals), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify(mockProposals), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
       if (u.includes('/api/members')) {
-        return Promise.resolve(new Response(JSON.stringify([{ id: 'm1', name: 'Kamla Devi', role: 'elder' }]), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify([{ id: 'm1', name: 'Kamla Devi', role: 'elder' }]), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
       if (u.endsWith('/api/me')) {
-        return Promise.resolve(new Response(JSON.stringify({ circle: { preferredName: 'Amma' } }), { headers: { 'Content-Type': 'application/json' } }));
+        return Promise.resolve(
+          new Response(JSON.stringify({ circle: { preferredName: 'Amma' } }), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
       }
-      return Promise.resolve(new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } }));
+      return Promise.resolve(
+        new Response(JSON.stringify({ ok: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
     });
   });
 

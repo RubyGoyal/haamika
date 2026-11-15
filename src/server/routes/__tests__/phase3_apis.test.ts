@@ -58,14 +58,12 @@ async function setupCircleWithMembers() {
     .set('Cookie', familyCookie)
     .send({ role: 'caretaker' });
 
-  const joinRes = await request(app)
-    .post('/api/invites/accept')
-    .send({
-      code: inviteRes.body.code,
-      name: 'Sunita',
-      email: 'sunita@example.com',
-      pin: '246802',
-    });
+  const joinRes = await request(app).post('/api/invites/accept').send({
+    code: inviteRes.body.code,
+    name: 'Sunita',
+    email: 'sunita@example.com',
+    pin: '246802',
+  });
   const caretakerCookie = joinRes.headers['set-cookie'];
 
   return {
@@ -147,10 +145,7 @@ describe('SOS Emergency Route (R8, SPEC §4.10)', () => {
   it('R8: triggers immediate email blast to all circle members and logs activity', async () => {
     const { circleId, elderCookie } = await setupCircleWithMembers();
 
-    const sosRes = await request(app)
-      .post('/api/sos')
-      .set('Cookie', elderCookie)
-      .expect(200);
+    const sosRes = await request(app).post('/api/sos').set('Cookie', elderCookie).expect(200);
 
     expect(sosRes.body.ok).toBe(true);
     expect(sosRes.body.alertedMembers).toBeGreaterThanOrEqual(2); // family + caretaker

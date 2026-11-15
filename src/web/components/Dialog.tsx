@@ -7,29 +7,39 @@ interface DialogProps {
   children: React.ReactNode;
 }
 
-export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children }) => {
-  const dialogRef = useRef<HTMLDivElement>(null);
-
+function useDialogAccessibility(
+  isOpen: boolean,
+  onClose: () => void,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+): void {
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return undefined;
+    }
 
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
 
     window.addEventListener('keydown', onKeyDown);
-    // Focus first focusable element inside
-    const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+    const focusable = containerRef.current?.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     if (focusable && focusable.length > 0) {
       focusable[0]?.focus();
     }
 
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onClose]);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen, onClose, containerRef]);
+}
+
+export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen, onClose, dialogRef);
 
   if (!isOpen) return null;
 
@@ -48,14 +58,28 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
         aria-labelledby="dialog-title"
         className="dialog-content"
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 id="dialog-title" style={{ fontSize: '1.4rem' }}>{title}</h2>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem',
+          }}
+        >
+          <h2 id="dialog-title" style={{ fontSize: '1.4rem' }}>
+            {title}
+          </h2>
           <button
             type="button"
             onClick={onClose}
             className="btn btn-secondary"
             aria-label="Close dialog"
-            style={{ minHeight: '36px', minWidth: '36px', padding: '0.25rem 0.5rem', borderRadius: '50%' }}
+            style={{
+              minHeight: '36px',
+              minWidth: '36px',
+              padding: '0.25rem 0.5rem',
+              borderRadius: '50%',
+            }}
           >
             ✕
           </button>

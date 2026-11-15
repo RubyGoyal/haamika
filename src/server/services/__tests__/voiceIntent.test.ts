@@ -22,7 +22,9 @@ describe('Voice Safety Guards (R9, SPEC §4.3)', () => {
   it('strictly blocks attempts to add, change, or stop medicines via voice', () => {
     const changeAttempt = checkDosingOrMedicineChangeSafety('Please stop medicine Metformin', 'en');
     expect(changeAttempt.isMedicineChangeAttempt).toBe(true);
-    expect(changeAttempt.safeReply).toContain('Medicines can only be added or changed by your family');
+    expect(changeAttempt.safeReply).toContain(
+      'Medicines can only be added or changed by your family',
+    );
 
     const addAttempt = checkDosingOrMedicineChangeSafety('Naya medicine add kar do', 'hi');
     expect(addAttempt.isMedicineChangeAttempt).toBe(true);
@@ -69,7 +71,9 @@ describe('Fallback Keyword Classifier for Every Intent (SPEC §4.3)', () => {
   });
 
   it('maps ADD_QUESTION', () => {
-    expect(fallbackKeywordClassify('Doctor se poochna hai ki chakkar kyun aata hai')).toBe('ADD_QUESTION');
+    expect(fallbackKeywordClassify('Doctor se poochna hai ki chakkar kyun aata hai')).toBe(
+      'ADD_QUESTION',
+    );
     expect(fallbackKeywordClassify('Ask doctor why my knee hurts')).toBe('ADD_QUESTION');
   });
 
@@ -94,7 +98,9 @@ describe('Confirmation Enforcement (R9, Correction 5)', () => {
     expect(buildVoiceReply('MARK_TAKEN', '', dummyCtx).requiresConfirmation).toBe(true);
     expect(buildVoiceReply('SKIP', '', dummyCtx).requiresConfirmation).toBe(true);
     expect(buildVoiceReply('LOG_READING', '130/80', dummyCtx).requiresConfirmation).toBe(true);
-    expect(buildVoiceReply('ADD_QUESTION', 'Will I need blood test?', dummyCtx).requiresConfirmation).toBe(true);
+    expect(
+      buildVoiceReply('ADD_QUESTION', 'Will I need blood test?', dummyCtx).requiresConfirmation,
+    ).toBe(true);
   });
 
   it('does not require confirmation for read-only queries', () => {
@@ -111,7 +117,13 @@ describe('Confirmation Enforcement (R9, Correction 5)', () => {
       elderName: 'Kamla Devi',
       currentSlotName: 'morning',
       currentSlotMedicines: [
-        { name: 'Metformin', dose: '500 mg', color: 'white', shape: 'oval', purpose: 'Control blood sugar' },
+        {
+          name: 'Metformin',
+          dose: '500 mg',
+          color: 'white',
+          shape: 'oval',
+          purpose: 'Control blood sugar',
+        },
       ],
       nextAppointment: {
         doctorName: 'Dr. Mehta',

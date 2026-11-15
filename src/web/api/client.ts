@@ -51,7 +51,11 @@ export function clearOfflineStateAndCaches(): void {
     // ignore
   }
 
-  if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  if (
+    typeof navigator !== 'undefined' &&
+    'serviceWorker' in navigator &&
+    navigator.serviceWorker.controller
+  ) {
     navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHES' });
   }
 }
@@ -87,63 +91,68 @@ if (typeof window !== 'undefined') {
   });
 }
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+function tryHandleOfflineEvent<T>(endpoint: string, options: RequestInit): T | null {
+  if (endpoint !== '/api/events' || options.method !== 'POST' || !options.body) {
+    return null;
+  }
+  try {
+    const parsedBody = JSON.parse(options.body as string) as OfflineEvent;
+    const queue = getOfflineQueue();
+    queue.push(parsedBody);
+    saveOfflineQueue(queue);
+    const deterministicId = `${parsedBody.date}_${parsedBody.slot}_${parsedBody.itemType}_${parsedBody.itemId}`;
+    return { ok: true, id: deterministicId, offline: true } as unknown as T;
+  } catch {
+    return null;
+  }
+}
+
+function parseErrorMessage(data: unknown, status: number): string {
+  if (data && typeof data === 'object' && 'error' in data && typeof data.error === 'string') {
+    return data.error;
+  }
+  return `Request failed with status ${status}`;
+}
+
+function buildHeaders(options: RequestInit): Headers {
   const headers = new Headers(options.headers || {});
   if (options.body && typeof options.body === 'string' && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
+  return headers;
+}
 
-  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+async function fetchPayload<T>(endpoint: string, options: RequestInit): Promise<T> {
+  const res = await fetch(endpoint, {
+    ...options,
+    headers: buildHeaders(options),
+    credentials: 'same-origin',
+  });
+  const contentType = res.headers.get('content-type');
+  const isJson = Boolean(contentType && contentType.includes('application/json'));
+  const data = isJson ? await res.json() : await res.text();
+  if (!res.ok) {
+    throw new ApiError(parseErrorMessage(data, res.status), res.status, data);
+  }
+  return data as T;
+}
 
-  if (isOffline && endpoint === '/api/events' && options.method === 'POST') {
-    try {
-      const parsedBody = JSON.parse(options.body as string) as OfflineEvent;
-      const queue = getOfflineQueue();
-      queue.push(parsedBody);
-      saveOfflineQueue(queue);
-      const deterministicId = `${parsedBody.date}_${parsedBody.slot}_${parsedBody.itemType}_${parsedBody.itemId}`;
-      return { ok: true, id: deterministicId, offline: true } as unknown as T;
-    } catch {
-      // fallback to network fetch attempt
-    }
+function isDeviceOffline(): boolean {
+  return typeof navigator !== 'undefined' && !navigator.onLine;
+}
+
+async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  if (isDeviceOffline()) {
+    const offlineResult = tryHandleOfflineEvent<T>(endpoint, options);
+    if (offlineResult) return offlineResult;
   }
 
   try {
-    const res = await fetch(endpoint, {
-      ...options,
-      headers,
-      credentials: 'same-origin',
-    });
-
-    const contentType = res.headers.get('content-type');
-    const isJson = contentType && contentType.includes('application/json');
-    const data = isJson ? await res.json() : await res.text();
-
-    if (!res.ok) {
-      const errorMsg =
-        data && typeof data === 'object' && 'error' in data && typeof data.error === 'string'
-          ? data.error
-          : `Request failed with status ${res.status}`;
-      throw new ApiError(errorMsg, res.status, data);
-    }
-
-    return data as T;
+    return await fetchPayload<T>(endpoint, options);
   } catch (err: unknown) {
     if (err instanceof ApiError) throw err;
-
-    // Network error while posting an event: queue offline
-    if (endpoint === '/api/events' && options.method === 'POST' && options.body) {
-      try {
-        const parsedBody = JSON.parse(options.body as string) as OfflineEvent;
-        const queue = getOfflineQueue();
-        queue.push(parsedBody);
-        saveOfflineQueue(queue);
-        const deterministicId = `${parsedBody.date}_${parsedBody.slot}_${parsedBody.itemType}_${parsedBody.itemId}`;
-        return { ok: true, id: deterministicId, offline: true } as unknown as T;
-      } catch {
-        // rethrow original error
-      }
-    }
+    const offlineResult = tryHandleOfflineEvent<T>(endpoint, options);
+    if (offlineResult) return offlineResult;
     throw err;
   }
 }

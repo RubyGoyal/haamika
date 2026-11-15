@@ -48,7 +48,8 @@ export function internalRoutes(repo: Repository): Router {
         const elderTz = circle.timezone || 'Asia/Kolkata';
         const nowInElderTz = now.setZone(elderTz);
         const todayStr = nowInElderTz.toFormat('yyyy-LL-dd');
-        const weekday = nowInElderTz.toFormat('ccc').toLowerCase() as 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+        const weekday = nowInElderTz.toFormat('ccc').toLowerCase() as
+          'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 
         const [members, medicines, appointments, events] = await Promise.all([
           repo.getMembersByCircle(circle.id),
@@ -60,7 +61,10 @@ export function internalRoutes(repo: Repository): Router {
         // 1. Mark missed events for closed dose windows
         const windowAfterMin = circle.windowAfterMin ?? 120;
         const slots = ['morning', 'afternoon', 'evening', 'night'] as const;
-        const ANCHOR_MAP: Record<'morning' | 'afternoon' | 'evening' | 'night', keyof typeof circle.anchors> = {
+        const ANCHOR_MAP: Record<
+          'morning' | 'afternoon' | 'evening' | 'night',
+          keyof typeof circle.anchors
+        > = {
           morning: 'breakfast',
           afternoon: 'lunch',
           evening: 'evening',

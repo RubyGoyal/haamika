@@ -12,8 +12,11 @@ export function hashPin(pin: string): Promise<{ hash: string; salt: string }> {
   return new Promise((resolve, reject) => {
     const salt = randomBytes(SALT_LEN).toString('hex');
     scrypt(pin, salt, KEYLEN, (err, derived) => {
-      if (err) return reject(err);
-      resolve({ hash: derived.toString('hex'), salt });
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ hash: derived.toString('hex'), salt });
+      }
     });
   });
 }
@@ -22,15 +25,21 @@ export function hashPin(pin: string): Promise<{ hash: string; salt: string }> {
 export function verifyPin(pin: string, storedHash: string, salt: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     scrypt(pin, salt, KEYLEN, (err, derived) => {
-      if (err) return reject(err);
-      const expected = Buffer.from(storedHash, 'hex');
-      resolve(timingSafeEqual(derived, expected));
+      if (err) {
+        reject(err);
+      } else {
+        const expected = Buffer.from(storedHash, 'hex');
+        resolve(timingSafeEqual(derived, expected));
+      }
     });
   });
 }
 
 const LOCKOUT_THRESHOLD = 5;
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+const MINUTES_15 = 15;
+const SECONDS_PER_MINUTE = 60;
+const MS_PER_SECOND = 1000;
+const LOCKOUT_DURATION_MS = MINUTES_15 * SECONDS_PER_MINUTE * MS_PER_SECOND;
 
 /** Check whether a member is currently locked out. */
 export function isLockedOut(

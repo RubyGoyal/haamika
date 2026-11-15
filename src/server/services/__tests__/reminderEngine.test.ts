@@ -6,7 +6,13 @@
 import { describe, it, expect } from 'vitest';
 import { DateTime } from 'luxon';
 import { computeDueReminders, formatDualTime } from '../reminderEngine.js';
-import type { Circle, Member, Medicine, ScheduleEvent, Appointment } from '../../../shared/types.js';
+import type {
+  Circle,
+  Member,
+  Medicine,
+  ScheduleEvent,
+  Appointment,
+} from '../../../shared/types.js';
 
 const mockCircle: Circle = {
   id: 'circle-101',
@@ -101,7 +107,9 @@ describe('Reminder Engine (R7)', () => {
     const upcoming = reminders.filter((r) => r.kind === 'dose_upcoming');
     expect(upcoming.length).toBeGreaterThan(0);
     expect(upcoming[0].to).toBe('sunita@example.com');
-    expect(upcoming[0].dedupeKey).toBe('circle-101:dose_upcoming:morning:2026-11-15:start:mem-caretaker');
+    expect(upcoming[0].dedupeKey).toBe(
+      'circle-101:dose_upcoming:morning:2026-11-15:start:mem-caretaker',
+    );
   });
 
   it('R7: caretaker and elder both receive dose_missed when dose window closes (Correction 1)', () => {
@@ -125,11 +133,15 @@ describe('Reminder Engine (R7)', () => {
 
     expect(caretakerReminder).toBeDefined();
     expect(caretakerReminder!.to).toBe('sunita@example.com');
-    expect(caretakerReminder!.dedupeKey).toBe('circle-101:dose_missed:morning:2026-11-15:close:mem-caretaker');
+    expect(caretakerReminder!.dedupeKey).toBe(
+      'circle-101:dose_missed:morning:2026-11-15:close:mem-caretaker',
+    );
 
     expect(elderReminder).toBeDefined();
     expect(elderReminder!.to).toBe('kamla@example.com');
-    expect(elderReminder!.dedupeKey).toBe('circle-101:dose_missed:morning:2026-11-15:close:mem-elder');
+    expect(elderReminder!.dedupeKey).toBe(
+      'circle-101:dose_missed:morning:2026-11-15:close:mem-elder',
+    );
   });
 
   it('R7: family receives dose_missed_escalation 60 min after window closes', () => {
@@ -148,7 +160,9 @@ describe('Reminder Engine (R7)', () => {
     expect(escalations.length).toBe(1);
     expect(escalations[0].to).toBe('rohan@example.com');
     expect(escalations[0].recipientRole).toBe('family');
-    expect(escalations[0].dedupeKey).toBe('circle-101:dose_missed_escalation:morning:2026-11-15:escalation:mem-family');
+    expect(escalations[0].dedupeKey).toBe(
+      'circle-101:dose_missed_escalation:morning:2026-11-15:escalation:mem-family',
+    );
   });
 
   it('R7: does not send reminder if doses are marked as taken', () => {

@@ -28,10 +28,7 @@ export function originCheck(req: Request, res: Response, next: NextFunction): vo
     const hostWithoutPort = hostHeader.split(':')[0];
     const originHostWithoutPort = originUrl.hostname;
 
-    if (
-      originUrl.host === hostHeader ||
-      originHostWithoutPort === hostWithoutPort
-    ) {
+    if (originUrl.host === hostHeader || originHostWithoutPort === hostWithoutPort) {
       next();
       return;
     }

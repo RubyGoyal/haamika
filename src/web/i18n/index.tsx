@@ -25,7 +25,8 @@ export const I18nProvider: React.FC<{ children: React.ReactNode; initialLang?: L
   initialLang = 'en',
 }) => {
   const [lang, setLangState] = useState<Language>(() => {
-    const saved = typeof window !== 'undefined' ? (localStorage.getItem('haamika_lang') as Language) : null;
+    const saved =
+      typeof window !== 'undefined' ? (localStorage.getItem('haamika_lang') as Language) : null;
     return saved === 'hi' || saved === 'en' ? saved : initialLang;
   });
 
