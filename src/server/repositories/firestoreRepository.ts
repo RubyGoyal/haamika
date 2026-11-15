@@ -20,7 +20,10 @@ import type {
 } from '../../shared/types.js';
 
 export function createFirestoreRepository(projectId: string): Repository {
-  const db = new Firestore({ projectId });
+  const db = new Firestore({
+    projectId,
+    ignoreUndefinedProperties: true,
+  });
 
   function circleRef(circleId: string) {
     return db.collection('circles').doc(circleId);

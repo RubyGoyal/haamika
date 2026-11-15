@@ -4,7 +4,6 @@
  */
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import express from 'express';
 import { loadConfig } from './config.js';
 import { createRepository } from './repositories/index.js';
 import { createApp } from './app.js';
@@ -21,28 +20,20 @@ async function main(): Promise<void> {
   // Create repository
   const repo = createRepository(config.DATA_BACKEND, config.GOOGLE_CLOUD_PROJECT);
 
-  // Seed demo data if DEMO_MODE is true
+  // Seed demo data if DEMO_MODE is true (server still starts if seeding fails)
   if (config.DEMO_MODE) {
     try {
       const demoInfo = await seedDemoCircle(repo);
       logger.info('Demo circle seeded', { code: demoInfo.circleCode, circleId: demoInfo.circleId });
     } catch (err: unknown) {
-      logger.error('Failed to seed demo data', { error: (err as Error).message });
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error('Failed to seed demo data', { error: message });
     }
   }
 
-  // Create Express app
-  const app = createApp(repo);
-
-  // Serve built web app in production
-  if (config.NODE_ENV === 'production') {
-    const webDir = join(__dirname, '../web');
-    app.use(express.static(webDir, { maxAge: '1y', immutable: true }));
-    // SPA fallback: serve index.html for all non-API routes
-    app.get('*', (_req, res) => {
-      res.sendFile(join(webDir, 'index.html'));
-    });
-  }
+  // Create Express app (with SPA fallback for production)
+  const webDir = config.NODE_ENV === 'production' ? join(__dirname, '../web') : undefined;
+  const app = createApp(repo, { webDir });
 
   // Start server
   const server = app.listen(config.PORT, () => {

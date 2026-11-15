@@ -2,6 +2,7 @@
  * Express application factory. Used by both the server entry point and tests.
  * Assembles middleware, routes, and error handling.
  */
+import { join } from 'node:path';
 import express from 'express';
 import compression from 'compression';
 import type { Repository } from './repositories/repository.js';
@@ -30,7 +31,11 @@ import { internalRoutes } from './routes/internal.js';
 import { voiceRoutes } from './routes/voice.js';
 import { sosRoutes } from './routes/sos.js';
 
-export function createApp(repo: Repository): express.Express {
+export interface AppOptions {
+  webDir?: string;
+}
+
+export function createApp(repo: Repository, options?: AppOptions): express.Express {
   const app = express();
 
   /* ── Cloud Run Trust Proxy ───────────────────────────── */
@@ -70,6 +75,23 @@ export function createApp(repo: Repository): express.Express {
   app.use('/api/settings', settingsRoutes(repo));
   app.use('/api/voice', voiceRoutes(repo));
   app.use('/api/sos', sosRoutes(repo));
+
+  /* ── Unmatched /api and /internal routes return JSON 404 ─ */
+  app.all(['/api', '/api/{*splat}'], (_req, res) => {
+    res.status(404).json({ error: 'Not found' });
+  });
+  app.all(['/internal', '/internal/{*splat}'], (_req, res) => {
+    res.status(404).json({ error: 'Not found' });
+  });
+
+  /* ── Production SPA fallback ─────────────────────────── */
+  if (options?.webDir) {
+    const webDir = options.webDir;
+    app.use(express.static(webDir, { maxAge: '1y', immutable: true }));
+    app.get('/{*splat}', (_req, res) => {
+      res.sendFile(join(webDir, 'index.html'));
+    });
+  }
 
   /* ── Error handler (must be last) ────────────────────── */
   app.use(errorHandler);
